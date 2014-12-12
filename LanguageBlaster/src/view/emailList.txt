@@ -1,0 +1,30 @@
+Birney Elementary School,NRAMIRE@tacoma.k12.wa.us
+Blix Elementary School,JWHITEH@tacoma.k12.wa.us
+Boze Elementary School,DJOO@tacoma.k12.wa.us
+DeLong Elementary School,CDONATO@tacoma.k12.wa.us
+Edison Elementary School,LZULUAG@tacoma.k12.wa.us 
+Fern Hill Elementary School,MSHEPHE@tacoma.k12.wa.us 
+Geiger Elementary School,MNGUYE2@tacoma.k12.wa.us 
+Helen Stafford Elementary School,LALMONT@tacoma.k12.wa.us
+Larchmont Elementary School,BPETERS@tacoma.k12.wa.us
+Lister Elementary School,mschram@tacoma.k12.wa.us
+Lyon Elementary School,ABENSON@tacoma.k12.wa.us
+Manitou Park Elementary School,STRALUC@tacoma.k12.wa.us
+McCarver Elementary School,JELVROM@tacoma.k12.wa.us
+N.E. Tacoma Elementary School,jgood@tacoma.k12.wa.us
+Point Defiance Elementary School,KMIROUS@tacoma.k12.wa.us
+Reed Elementary School, PBAKER@tacoma.k12.wa.us
+Skyline Elementary School,MNGUYE2@tacoma.k12.wa.us
+Whitman Elementary School,KLUANGP@tacoma.k12.wa.us 
+First Creek Middle School,BJONESG@tacoma.k12.wa.us 
+Gray Middle School,acoulte@tacoma.k12.wa.us
+Foss High School,BSADLER@tacoma.k12.wa.us
+Lincoln High School,SERGUN@tacoma.k12.wa.us
+Stadium High School,CPHAM@tacoma.k12.wa.us
+Wilson High School,CPHAM@tacoma.k12.wa.us
+Mount Tahoma High School, aleach@tacoma.k12.wa.us
+Baker Middle School,  jbalmer@Tacoma.K12.Wa.US
+Sheridan Elementary School,  MGOYENE@Tacoma.K12.Wa.US
+Roosevelt Elementary School, RCARR@Tacoma.K12.Wa.US
+Fawcett Elementary School, ALEITER@tacoma.k12.wa.us
+Truman Middle School, lnichol1@Tacoma.K12.Wa.US
