@@ -749,9 +749,9 @@ public class LBMain {
 
 		if (isESL) {
 
-			final String email = myEmailList.get(index).getEmails();
+			final String[] emails = myEmailList.get(index).getEmails();
 			mySchoolData = new SchoolData(myLanguageSet, myCurrentSchool,
-					bytes, email, myCurrentFilePath, myCurrentMonth);
+					bytes, emails, myCurrentFilePath, myCurrentMonth);
 			myDataStack.push(mySchoolData);
 
 		}

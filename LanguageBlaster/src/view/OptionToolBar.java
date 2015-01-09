@@ -45,8 +45,8 @@ public class OptionToolBar extends JToolBar {
 
 	/** Private field to hold an email button. */
 	private JButton myEmailButton;
-	
-	/** Private field to hold an email sla to pam button.*/
+
+	/** Private field to hold an email sla to pam button. */
 	private JButton mySlaButton;
 
 	/**
@@ -128,16 +128,22 @@ public class OptionToolBar extends JToolBar {
 						try {
 
 							URI mailto;
+							StringBuilder addresses = new StringBuilder();
+							String[] teacherEmails = sd.getEmailAddresses();
 
+							for (int i = 0; i < sd.getEmailAddresses().length; i++) {
+								addresses.append(teacherEmails[i].trim())
+										.append(";").append("%20").trimToSize();
+							}
+							System.out.println("Addresses "
+									+ addresses.toString());
 							mailto = new URI("mailto:"
-									+ sd.getEmailAddresses().trim()
-									+ "?subject=" + sd.getCurrentMonth()
-									+ "%20Counts"
+									+ addresses.toString().trim() + "?subject="
+									+ sd.getCurrentMonth() + "%20Counts"
 									+ "&body=Attached%20is%20your%20current%20"
 									+ sd.getCurrentMonth() + "%20class%20list"
 									+ "%20for%20" + sd.getEmailName());
-							
-							
+
 							desktop.mail(mailto);
 
 						} catch (URISyntaxException e) {
@@ -167,50 +173,54 @@ public class OptionToolBar extends JToolBar {
 
 				final int choice = JOptionPane.showConfirmDialog(null,
 						"Remember to set your default printer to \n "
-								+ "the office Xerox machine.", "alert", JOptionPane.OK_CANCEL_OPTION);
+								+ "the office Xerox machine.", "alert",
+						JOptionPane.OK_CANCEL_OPTION);
 
 				if (choice == JOptionPane.OK_OPTION) {
-					
-				for (int i = 0; i < myFileList.size(); i++) {
 
-					try {
+					for (int i = 0; i < myFileList.size(); i++) {
 
-						Desktop.getDesktop().print(myFileList.get(i));
+						try {
 
-					} catch (final IOException e) {
-						
-						System.err.println("Sorry, couldn't find that file...");
-						
+							Desktop.getDesktop().print(myFileList.get(i));
+
+						} catch (final IOException e) {
+
+							System.err
+									.println("Sorry, couldn't find that file...");
+
+						}
 					}
 				}
-			}
-				
+
 			}
 
 		});
-		
+
 		mySlaButton = new JButton("Email SLA to Pam");
 		mySlaButton.setSize(new Dimension(mySlaButton.getPreferredSize()));
 		add(mySlaButton);
 		mySlaButton.setVisible(false);
-		
+
 		mySlaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent theEvent) {
-				
+
 				try {
-					
+
 					URI mailto;
 					mailto = new URI("mailto:phulst@tacoma.k12.wa.us"
-							+ "?subject=" + myDataStack.getFirst().getCurrentMonth()
+							+ "?subject="
+							+ myDataStack.getFirst().getCurrentMonth()
 							+ "%20Counts"
 							+ "&body=Attached%20is%20your%20current%20"
-							+ myDataStack.getFirst().getCurrentMonth() + "%20SLA%20Count");
+							+ myDataStack.getFirst().getCurrentMonth()
+							+ "%20SLA%20Count");
 					Desktop.getDesktop().mail(mailto);
-					
-					
+
 				} catch (final IOException e) {
-					
-					System.err.println("Sorry, can't use the default mail client");
+
+					System.err
+							.println("Sorry, can't use the default mail client");
 				} catch (URISyntaxException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -218,8 +228,6 @@ public class OptionToolBar extends JToolBar {
 			}
 		});
 	}
-	
-	
 
 	/**
 	 * Public method to get the email list from the email panel.

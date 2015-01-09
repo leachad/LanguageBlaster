@@ -3,15 +3,15 @@ package model;
 public class Email {
 	
 	/**Private field to hold the String*/
-	private String myEmailAddress;
+	private String[] myEmailAddresses;
 	
 	/**Private field to hold the name of the school.*/
 	private String mySchool;
 	
 	public Email(final String theSchool,
-			final String theEmail) {
+			final String[] theEmails) {
 		
-		myEmailAddress = theEmail;
+		myEmailAddresses = theEmails;
 		mySchool = theSchool;
 	}
 	
@@ -21,9 +21,9 @@ public class Email {
 	 * array of Email addresses 
 	 * to send out.
 	 */
-	public String getEmails() {
+	public String[] getEmails() {
 		
-		return myEmailAddress;
+		return myEmailAddresses;
 	}
 	
 	/**Public method to return
@@ -38,6 +38,21 @@ public class Email {
 		
 		return mySchool;
 		
+	}
+	
+	/**
+	 * Overrides toString method to 
+	 * print out the emails in the 
+	 * array with appropriate delimiting
+	 * tokens.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < myEmailAddresses.length; i++) {
+			sb.append(myEmailAddresses[i] + ';');
+		}
+		return sb.toString();
 	}
 
 

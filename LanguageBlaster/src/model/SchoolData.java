@@ -30,7 +30,7 @@ public class SchoolData {
 	private byte[] myBytes;
 	
 	/**Private field to hold a string array of addresses.*/
-	private String myAddress;
+	private String[] myEmailAddresses;
 	
 	/**Private field to hold a link to the file address.*/
 	private String myFileAddress;
@@ -41,7 +41,7 @@ public class SchoolData {
 	public SchoolData(final Set<NativeLanguage> theLanguageSet,
 			final String theSchoolName,
 			final byte[] theBytes,
-			final String theAddress,
+			final String[] theEmailAddresses,
 			final String theFileAddress,
 			final String theCurrentMonth) {
 		
@@ -53,7 +53,7 @@ public class SchoolData {
 		
 		myBytes = theBytes;
 		
-		myAddress = theAddress;
+		myEmailAddresses = theEmailAddresses;
 		
 		myCurrentMonth = theCurrentMonth;
 			
@@ -125,9 +125,9 @@ public class SchoolData {
 	 * of emails.  (usually 1, but sometimes
 	 * there are coteachers.)
 	 */
-	public String getEmailAddresses() {
+	public String[] getEmailAddresses() {
 		
-		return myAddress;
+		return myEmailAddresses;
 	}
 	
 	/**Public method to return the current month
