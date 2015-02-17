@@ -1,7 +1,7 @@
 /**
  * 
  */
-package view;
+package view.master;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
