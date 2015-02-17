@@ -1,6 +1,6 @@
 package model;
 
-import view.master.LBMain;
+import view.LBMain;
 
 public class Begin {
 	
