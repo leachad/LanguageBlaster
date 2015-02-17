@@ -173,7 +173,7 @@ public class LBMain {
 
 		myFrame.setVisible(true);
 		myFrame.setResizable(false);
-		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myFrame.setPreferredSize(new Dimension(500, 300));
 		myFrame.pack();
 		myFrame.setLocationRelativeTo(null);

@@ -82,7 +82,7 @@ public class EmailTest {
 	private void start() {
 		
 		String USER_NAME = "aleach";  // GMail user name (just the part before "@gmail.com")
-		String PASSWORD = "Scrulipee32"; // GMail password
+		String PASSWORD = "test"; // GMail password
 		String RECIPIENT = myRecipient;
 
 
@@ -104,7 +104,7 @@ public class EmailTest {
 		props.setProperty("mail.smtp.auth", "true");
 		props.setProperty("mail.debug", "true");
 		
-		props.setProperty("mail.smtp.host", "smtp.gmail.com");
+		props.setProperty("mail.smtp.host", "smtp.tacoma.k12.wa.us");
 		props.setProperty("mail.smtp.port", "587");
 		//props.setProperty("mail.smtp.auth.mechanisms", "NTLM");
 		props.setProperty("mail.smtp.starttls.enable", "true");

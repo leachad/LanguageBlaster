@@ -102,6 +102,7 @@ public class OptionToolBar extends JToolBar {
 				frame.setSize(new Dimension((int) (myFrame.getWidth() * 1.5),
 						(int) (myFrame.getHeight() * 1.5)));
 				frame.setVisible(true);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				frame.setLocationRelativeTo(myFrame);
 				frame.setResizable(true);
 

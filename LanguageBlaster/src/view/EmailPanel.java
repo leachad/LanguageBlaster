@@ -99,6 +99,7 @@ public class EmailPanel extends JPanel {
 			public void actionPerformed(final ActionEvent theEvent) {
 
 				writeEmailsToFile();
+				
 
 			}
 		});
