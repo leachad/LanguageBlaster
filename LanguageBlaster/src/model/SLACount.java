@@ -150,7 +150,6 @@ public class SLACount {
 			myOutput = new FileOutputStream(new File(outFilePath));
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

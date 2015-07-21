@@ -30,10 +30,10 @@ import model.Email;
  */
 public class EmailPanel extends JPanel {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private static final String CARRIAGE_RETURN = "/r/n";
+	private static final String DELIMITER = ",";
+	private static final String EMAIL_STORAGE = "src/view/emailList.txt";
 
 	/** Private field to hold a default dimension. */
 	private static final int DEFAULT_WIDTH = 600;
@@ -99,7 +99,6 @@ public class EmailPanel extends JPanel {
 			public void actionPerformed(final ActionEvent theEvent) {
 
 				writeEmailsToFile();
-				
 
 			}
 		});
@@ -159,8 +158,6 @@ public class EmailPanel extends JPanel {
 	private void displayEmails() {
 
 		for (int i = 0; i < myEmailList.size(); i++) {
-
-			// School will never be editable
 			final Email email = myEmailList.get(i);
 			final JTextField showSchool = new JTextField(email.getSchool());
 			showSchool.setEditable(false);
@@ -168,29 +165,23 @@ public class EmailPanel extends JPanel {
 					TEXTFIELD_HEIGHT));
 			myBasePanel.add(showSchool);
 
-			final JTextField emailField = new JTextField(); // Displays the
-															// current emails
+			final JTextField emailField = new JTextField();
 			emailField.setPreferredSize(new Dimension(DEFAULT_WIDTH / 2,
 					TEXTFIELD_HEIGHT));
 			myBasePanel.add(emailField);
 			emailField.setText(email.toString());
 
-			emailField.addActionListener(new ActionListener() { // ActionListener
-																// to set all
-																// the new
-																// emails
-						public void actionPerformed(final ActionEvent theEvent) {
-							final String newEmail = emailField.getText();
-							final String newEntry = showSchool.getText() + ", "
-									+ newEmail;
-							final Email newMail = parseLine(newEntry, true);
-							System.out.println("NEW MAIL > "
-									+ newMail.toString());
-							replaceEmail(newMail);
+			emailField.addActionListener(new ActionListener() {
+				public void actionPerformed(final ActionEvent theEvent) {
+					final String newEmail = emailField.getText();
+					final String newEntry = showSchool.getText() + ", "
+							+ newEmail;
+					final Email newMail = parseLine(newEntry, true);
+					replaceEmail(newMail);
 
-							emailField.setText(newMail.toString());
-						}
-					});
+					emailField.setText(newMail.toString());
+				}
+			});
 
 		}
 
@@ -206,27 +197,12 @@ public class EmailPanel extends JPanel {
 	private void replaceEmail(Email newMail) {
 
 		for (int i = 0; i < myEmailList.size(); i++) {
-
-			System.out.println("STORED " + myEmailList.get(i).getSchool()
-					+ "NEW " + newMail.getSchool());
 			if (myEmailList.get(i).getSchool()
 					.equalsIgnoreCase(newMail.getSchool())) {
-				// myEmailList.set(i, newMail);
-				// System.out.println("New address is " + newMail);
-				System.out.println("The size of the list is "
-						+ myEmailList.size());
 				myEmailList.remove(i);
-				System.out.println("The size of the list is "
-						+ myEmailList.size());
 				myEmailList.add(newMail);
-				System.out.println("The size of the list is "
-						+ myEmailList.size());
 			}
-			System.out.println("Retained address at "
-					+ myEmailList.get(i).toString());
-
 		}
-
 	}
 
 	/**
@@ -246,7 +222,6 @@ public class EmailPanel extends JPanel {
 
 		String[] emails = new String[firstSplit[1].split(";").length];
 		if (!isOutgoing) {
-
 			String[] secondSplit = firstSplit[1].split(";");
 			for (int i = 0; i < secondSplit.length; i++) {
 				emails[i] = secondSplit[i];
@@ -259,9 +234,8 @@ public class EmailPanel extends JPanel {
 			}
 
 		}
-		final Email email = new Email(school, emails);
 
-		return email;
+		return new Email(school, emails);
 
 	}
 
@@ -270,31 +244,20 @@ public class EmailPanel extends JPanel {
 	 * program initially reads from.
 	 */
 	private void writeEmailsToFile() {
-
 		FileWriter out = null;
+		
 		try {
-
-			out = new FileWriter(new File("src/view/emailList.txt"));
-			System.out.println("The size of the email list is "
-					+ myEmailList.size());
+			out = new FileWriter(new File(EMAIL_STORAGE));
 			for (int i = 0; i < myEmailList.size(); i++) {
-				System.out
-						.println("EMAIL(S): " + myEmailList.get(i).toString());
-				out.write(myEmailList.get(i).getSchool().concat(",")
+				out.write(myEmailList.get(i).getSchool().concat(DELIMITER)
 						.concat(myEmailList.get(i).toString())
-						+ "\r\n");
-
+						+ CARRIAGE_RETURN);
 			}
-
 			out.close();
 
-		} catch (FileNotFoundException e) {
-
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}
 
 	/**
