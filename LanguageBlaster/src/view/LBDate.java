@@ -3,7 +3,6 @@
  */
 package view;
 
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -11,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import resources.BlasterCalendar;
@@ -23,18 +21,15 @@ import resources.BlasterCalendar;
 public class LBDate {
 
 	/** Fields to hold the current Month Day and Year.*/
-	public static String myCurrentMonth;
-	public static String myCurrentDay;
-	public static String myCurrentYear;
+	private static String myCurrentMonth;
+	private static String myCurrentDay;
+	private static String myCurrentYear;
 
 	/**
 	 * Private method to add the date picker widgets to the frame.
 	 */
 	public static JPanel addDatePickerWidgets() {
 		final JPanel topPanel = new JPanel(new GridLayout(1, 3));
-
-		final JLabel displayLabel = new JLabel("OUTPUT FILE PATH");
-		displayLabel.setBackground(Color.gray);
 
 		final JComboBox<String> monthBox = new JComboBox<>(BlasterCalendar.COUNT_MONTHS);
 		monthBox.addItemListener(new ItemListener() {
@@ -91,11 +86,37 @@ public class LBDate {
 			myCurrentYear = formatter.format(new Date());
 		}
 
-		topPanel.add(displayLabel);
 		topPanel.add(monthBox);
 		topPanel.add(dayBox);
 		topPanel.add(yearBox);
 
 		return topPanel;
+	}
+	
+	/**
+	 * Public method used to access the current year as selected by the date picker 
+	 * object.
+	 * @return theCurrentYear
+	 */
+	public static String getCurrentYear() {
+		return myCurrentYear;
+	}
+	
+	/**
+	 * Public method used to access the current month as selected by the date picker 
+	 * object.
+	 * @return theCurrentMonth
+	 */
+	public static String getCurrentMonth() {
+		return myCurrentMonth;
+	}
+	
+	/**
+	 * Public method used to access the current day as selected by the date picker 
+	 * object.
+	 * @return theCurrentDay
+	 */
+	public static String getCurrentDay() {
+		return myCurrentDay;
 	}
 }

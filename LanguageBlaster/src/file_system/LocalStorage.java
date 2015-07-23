@@ -33,9 +33,9 @@ public class LocalStorage {
 
 		myOutputFolder = new File(STORAGE_PATH.concat(File.separator)
 				.concat(chooseParentFolder()).concat(File.separator)
-				.concat("ESL_Counts--").concat(LBDate.myCurrentMonth)
-				.concat("-").concat(LBDate.myCurrentDay).concat("-")
-				.concat(LBDate.myCurrentYear));
+				.concat("ESL_Counts--").concat(LBDate.getCurrentMonth())
+				.concat("-").concat(LBDate.getCurrentDay()).concat("-")
+				.concat(LBDate.getCurrentYear()));
 
 		myOutputFolder.mkdir();
 
@@ -59,9 +59,9 @@ public class LocalStorage {
 	 */
 	private static String chooseParentFolder() {
 		final StringBuilder sb = new StringBuilder();
-		final int year = Integer.parseInt(LBDate.myCurrentYear) + 1;
+		final int year = Integer.parseInt(LBDate.getCurrentYear()) + 1;
 
-		switch (LBDate.myCurrentMonth) {
+		switch (LBDate.getCurrentMonth()) {
 		case "September":
 			sb.append(Integer.toString(year) + " " + "ESL_Counts");
 			break;
@@ -75,28 +75,28 @@ public class LocalStorage {
 			sb.append(Integer.toString(year) + " " + "ESL_Counts");
 			break;
 		case "January":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		case "February":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		case "March":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		case "April":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		case "May":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		case "June":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		case "July":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		case "August":
-			sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+			sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 			break;
 		default:
 			sb.append(makeNewParentFolder());
@@ -115,7 +115,7 @@ public class LocalStorage {
 	 */
 	private static String makeNewParentFolder() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(LBDate.myCurrentYear + " " + "ESL_Counts");
+		sb.append(LBDate.getCurrentYear() + " " + "ESL_Counts");
 
 		return sb.toString();
 	}
