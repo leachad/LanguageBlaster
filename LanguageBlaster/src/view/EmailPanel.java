@@ -8,13 +8,10 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import model.Email;
+import file_system.LocalStorage;
 
 /**
  * @author aleach
@@ -51,7 +49,7 @@ public class EmailPanel extends JPanel {
 	private JScrollPane myScrollPane;
 
 	/** Private field to hold an array of Email address objects. */
-	private ArrayList<Email> myEmailList;
+	private List<Email> myEmailList;
 
 	public EmailPanel() {
 
@@ -66,14 +64,12 @@ public class EmailPanel extends JPanel {
 	 */
 	private void start() {
 
-		myEmailList = new ArrayList<>();
+		myEmailList = LocalStorage.getEmailList();
 
 		myBasePanel = new JPanel(new GridLayout(myEmailList.size(), 2));
 		myBasePanel.setSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
 		addSaveButton();
-
-		readEmailFile();
 		displayEmails();
 		setPanelLayout();
 
@@ -120,36 +116,6 @@ public class EmailPanel extends JPanel {
 
 	}
 
-	/**
-	 * Private method to read the emails from a text file. Format is:
-	 * 
-	 * SchoolName , SchoolEmails-SchoolEmails-SchoolEmails
-	 */
-	private void readEmailFile() {
-
-		try {
-
-			final BufferedReader br = new BufferedReader(new FileReader(
-					new File("src/view/emailList.txt")));
-
-			while (br.ready()) {
-
-				final String line = br.readLine();
-				myEmailList.add(parseLine(line, false));
-
-			}
-			br.close();
-
-		} catch (FileNotFoundException f) {
-
-			System.err.println("Sorry, couldn't find that file...");
-
-		} catch (IOException e) {
-
-			System.err.println("Sorry, couldn't find that file...");
-		}
-
-	}
 
 	/**
 	 * Private method to display the emails with their schools on the panel.
@@ -266,7 +232,7 @@ public class EmailPanel extends JPanel {
 	 * @return myEmailList is the map of all email address with schoolName as
 	 *         the key.
 	 */
-	public ArrayList<Email> getEmails() {
+	public List<Email> getEmails() {
 
 		return myEmailList;
 	}

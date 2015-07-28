@@ -84,8 +84,20 @@ public class LBWriter {
 	public LBWriter() {
 		myDataStack = new ArrayDeque<>();
 		myFileList = new ArrayList<>();
-		myEmailList = new ArrayList<>();
+		myEmailList = LocalStorage.getEmailList();;
 		mySLACount = null;
+	}
+	
+	public List<File> getFileList() {
+		return myFileList;
+	}
+	
+	public List<Email> getEmailList() {
+		return myEmailList;
+	}
+	
+	public ArrayDeque<SchoolData> getDataStack() {
+		return myDataStack;
 	}
 
 	/**

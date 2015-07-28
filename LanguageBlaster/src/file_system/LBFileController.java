@@ -3,13 +3,17 @@ package file_system;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import model.Email;
 import model.SLACount;
 import model.SchoolData;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Row;
 
 public class LBFileController {
 
@@ -31,9 +35,6 @@ public class LBFileController {
 	/** Private field to hold the row index to begin parsing data. */
 	private int mySelectedStartIndex = DEFAULT_START_INDEX;
 
-	/** Private field to hold a Stack of schools and data. */
-	private ArrayDeque<SchoolData> myDataStack;
-
 	/** Private field to hold a reference to the parentDirectoryFilePath. */
 	private String myParentFolderPath;
 
@@ -41,9 +42,6 @@ public class LBFileController {
 	private SLACount mySLACount;
 
 	public LBFileController() {
-
-		myDataStack = new ArrayDeque<>();
-
 		myLBParser = new LBParser();
 		myLBWriter = new LBWriter();
 
@@ -107,7 +105,37 @@ public class LBFileController {
 	 * Public method to return the DataStack for updating purposes.
 	 */
 	public ArrayDeque<SchoolData> getDataStack() {
-		return myDataStack;
+		return myLBWriter.getDataStack();
+	}
+	
+	/**
+	 * Public method to return the List of files for updating purposes.
+	 */
+	public List<File> getFileList() {
+		return myLBWriter.getFileList();
+	}
+	
+	/**
+	 * Public method to return the List of Email's for updating purposes.
+	 */
+	public List<Email> getEmailList() {
+		return LocalStorage.getEmailList();
+	}
+	
+	/**
+	 * Public method used to read and return the top 'n' rows as selected by the User.
+	 * This will be the first call when the file is selected. When the User selects one of the 
+	 * top 'n' rows, the workbook will be read. Does not guarantee that the list will not be null.
+	 */
+	public List<Row> getPotentialSortingRows(final int theTopRows) {
+		List<Row> topRows = new ArrayList<>();
+		try {
+			topRows = myLBParser.readPotentialSortingRows(theTopRows, myFile);
+		} catch (InvalidFormatException | IOException e) {
+			JOptionPane.showMessageDialog(null, ERROR_MESSAGE);
+		} 
+		
+		return topRows;
 	}
 
 	/**
@@ -123,6 +151,7 @@ public class LBFileController {
 		else
 			myLBWriter.writeCountData(myLBParser.getCellMap(), mySLACount, myLBParser.getLanguageMap());
 	}
+	
 
 	/**
 	 * Public method to read the workbook into a buffer using the method of the

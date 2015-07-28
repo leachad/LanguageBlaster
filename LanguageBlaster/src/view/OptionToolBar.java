@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -31,23 +31,47 @@ import model.SchoolData;
  */
 public class OptionToolBar extends JToolBar {
 
+	/** Private field to hold the email Address of the Office Coordinator. */
+	private static final String OFFICE_ADMIN_ADDRESS = "phulst@tacoma.k12.wa.us";
+
+	/** Private field to hold an Error Message. */
+	private static final String EMAIL_ERROR = "Sorry, there was a problem executing your request";
+
+	/** Private field to hold a reference to a File Error. */
+	private static final String FILE_ERROR = "Sorry, couldn't find that file...";
+
+	/** Private field to hold a Warning Message. */
+	private static final String PRINTER_ALERT = "Remember to set your default printer to \n "
+			+ "the office Xerox machine.";
+
+	/** Private field to hold an Alert Constant. */
+	private static final String KEY_ALERT = "alert";
+
 	/** Private field to hold a Data stack. */
 	private ArrayDeque<SchoolData> myDataStack;
 
 	/** Private field to hold an ArrayList of files. */
-	private ArrayList<File> myFileList;
+	private List<File> myFileList;
 
 	/** Private field to hold a reference to the frame. */
 	private JFrame myFrame;
 
 	/** Private field to hold a current list of emails. */
-	private ArrayList<Email> myEmailList;
-
-	/** Private field to hold an email button. */
-	private JButton myEmailButton;
+	private List<Email> myEmailList;
 
 	/** Private field to hold an email sla to pam button. */
 	private JButton mySlaButton;
+	
+	/** Private field used to hold an email button.*/
+	private JButton myEmailButton;
+	
+	/** Private field to hold a reference to the print button.*/
+	private JButton myPrintButton;
+
+	/** Private field to hold a reference to the Current Month. */
+	private String myCurrentMonth;
+	
+	
 
 	/**
 	 * Serial ID.
@@ -55,13 +79,13 @@ public class OptionToolBar extends JToolBar {
 	private static final long serialVersionUID = 1L;
 
 	public OptionToolBar(final JFrame theFrame,
-			final ArrayDeque<SchoolData> theDataStack,
-			final ArrayList<File> theFileList) {
+			final ArrayDeque<SchoolData> theDataStack, final List<File> list,
+			final List<Email> list2) {
 
 		myFrame = theFrame;
-		// myCurrentMonth = theCurrentMonth;
 		myDataStack = theDataStack;
-		myFileList = theFileList;
+		myFileList = list;
+		myEmailList = list2;
 
 		addComponents();
 	}
@@ -73,25 +97,123 @@ public class OptionToolBar extends JToolBar {
 	 * @param theDataStack
 	 *            is the fresh stack of data being passed in.
 	 */
-	public void updateDataStack(final ArrayDeque<SchoolData> theDataStack) {
+	public void updateToolBar(final ArrayDeque<SchoolData> theDataStack,
+			final List<Email> theEmailList, final List<File> theFileList) {
 
 		myDataStack = theDataStack;
-		myEmailButton.setVisible(true);
-		mySlaButton.setVisible(true);
+		myEmailList = theEmailList;
+		myFileList = theFileList;
+		myCurrentMonth = theDataStack.peek().getCurrentMonth();
+		myEmailButton.setEnabled(true);
+		mySlaButton.setEnabled(true);
+		myPrintButton.setEnabled(true);
 	}
 
 	/**
 	 * Private method to add components to the toolbar.
 	 */
 	private void addComponents() {
+	
+		add(getEditEmailButton());
+		add(getEmailButton());
+		add(getSLAButton());
+		add(getPrintButton());
+		
+		
+		
+	}
+	
+	/**
+	 * Method used to build the email button.
+	 * @return the button used populate email client windows
+	 */
+	private JButton getEmailButton() {
+		myEmailButton = new JButton("Email Lists");
+		myEmailButton.setEnabled(false);
+		myEmailButton.setSize(new Dimension(myEmailButton.getPreferredSize()));
 
+		myEmailButton.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent theEvent) {
+
+				while (!myDataStack.isEmpty()) {
+
+					SchoolData sd = myDataStack.pop();
+
+					initiateDesktopClient(sd);
+
+				}
+			}
+		});
+		
+		return myEmailButton;
+	}
+	
+	/**
+	 * Method used to build the SLA button.
+	 * @return the button used to bring up email Client to emailSLA to Pam.
+	 */
+	private JButton getSLAButton() {
+		mySlaButton = new JButton("Email SLA to Pam");
+		mySlaButton.setSize(new Dimension(mySlaButton.getPreferredSize()));
+		mySlaButton.setEnabled(false);
+
+		mySlaButton.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent theEvent) {
+
+				try {
+
+					URI mailto;
+					mailto = new URI(buildMailToURI(OFFICE_ADMIN_ADDRESS));
+					Desktop.getDesktop().mail(mailto);
+
+				} catch (final IOException | URISyntaxException e) {
+					JOptionPane.showMessageDialog(null,
+							EMAIL_ERROR + e.getMessage());
+				}
+			}
+		});
+		
+		return mySlaButton;
+	}
+	
+	/**
+	 * Method used to build the print  button.
+	 * @return the button used to print all files constructed using LBWriter
+	 */
+	private JButton getPrintButton() {
+		myPrintButton = new JButton("Print Lists");
+		myPrintButton.setSize(new Dimension(myPrintButton.getPreferredSize()));
+		myPrintButton.setEnabled(false);
+		
+		myPrintButton.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent theEvent) {
+
+				final int choice = JOptionPane.showConfirmDialog(null,
+						PRINTER_ALERT, KEY_ALERT, JOptionPane.OK_CANCEL_OPTION);
+
+				if (choice == JOptionPane.OK_OPTION) {
+
+					printFiles();
+
+				}
+
+			}
+
+		});
+		return myPrintButton;
+	}
+	
+	/**
+	 * Method used to build the edit email button.
+	 * @return the button used to bring up the edit email frame
+	 */
+	private JButton getEditEmailButton() {
 		final JButton editEmails = new JButton("Edit Emails");
 		editEmails.setSize(new Dimension(editEmails.getPreferredSize()));
-		add(editEmails);
-
+		
 		final JFrame frame = new JFrame();
 		final EmailPanel eP = new EmailPanel();
-
+		
 		myEmailList = eP.getEmails();
 		// opens up a new email window.
 		editEmails.addActionListener(new ActionListener() {
@@ -108,126 +230,80 @@ public class OptionToolBar extends JToolBar {
 
 			}
 		});
+		return editEmails;
+	}
 
-		myEmailButton = new JButton("Email Lists");
-		myEmailButton.setVisible(false);
-		myEmailButton.setSize(new Dimension(myEmailButton.getPreferredSize()));
-		add(myEmailButton);
+	/**
+	 * Private method used to print all the Notebook Files using the
+	 * java.awt.Desktop class and the print function.
+	 */
+	private void printFiles() {
+		for (int i = 0; i < myFileList.size(); i++) {
 
-		myEmailButton.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent theEvent) {
+			try {
 
-				while (!myDataStack.isEmpty()) {
+				Desktop.getDesktop().print(myFileList.get(i));
 
-					SchoolData sd = myDataStack.pop();
+			} catch (final IOException e) {
 
-					Desktop desktop;
-					if (Desktop.isDesktopSupported()
-							&& (desktop = Desktop.getDesktop())
-									.isSupported(Desktop.Action.MAIL)) {
-
-						try {
-
-							URI mailto;
-							StringBuilder addresses = new StringBuilder();
-							String[] teacherEmails = sd.getEmailAddresses();
-
-							for (int i = 0; i < sd.getEmailAddresses().length; i++) {
-								addresses.append(teacherEmails[i].trim())
-										.append(";").append("%20").trimToSize();
-							}
-							System.out.println("Addresses "
-									+ addresses.toString());
-							mailto = new URI("mailto:"
-									+ addresses.toString().trim() + "?subject="
-									+ sd.getCurrentMonth() + "%20Counts"
-									+ "&body=Attached%20is%20your%20current%20"
-									+ sd.getCurrentMonth() + "%20class%20list"
-									+ "%20for%20" + sd.getEmailName());
-
-							desktop.mail(mailto);
-
-						} catch (URISyntaxException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-					} else {
-						// TODO fallback to some Runtime.exec(..) voodoo?
-						throw new RuntimeException(
-								"desktop doesn't support mailto; mail is dead anyway ;)");
-					}
-
-				}
-			}
-		});
-
-		final JButton printCounts = new JButton("Print Lists");
-		printCounts.setSize(new Dimension(printCounts.getPreferredSize()));
-		add(printCounts);
-
-		printCounts.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent theEvent) {
-
-				final int choice = JOptionPane.showConfirmDialog(null,
-						"Remember to set your default printer to \n "
-								+ "the office Xerox machine.", "alert",
-						JOptionPane.OK_CANCEL_OPTION);
-
-				if (choice == JOptionPane.OK_OPTION) {
-
-					for (int i = 0; i < myFileList.size(); i++) {
-
-						try {
-
-							Desktop.getDesktop().print(myFileList.get(i));
-
-						} catch (final IOException e) {
-
-							System.err
-									.println("Sorry, couldn't find that file...");
-
-						}
-					}
-				}
+				JOptionPane
+						.showMessageDialog(null, FILE_ERROR + e.getMessage());
 
 			}
+		}
+	}
 
-		});
+	/**
+	 * Method used to initiate the Desktop Client for bringing up Default Email
+	 * Windows.
+	 */
+	private void initiateDesktopClient(final SchoolData theSchoolData) {
+		Desktop desktop;
+		if (Desktop.isDesktopSupported()
+				&& (desktop = Desktop.getDesktop())
+						.isSupported(Desktop.Action.MAIL)) {
 
-		mySlaButton = new JButton("Email SLA to Pam");
-		mySlaButton.setSize(new Dimension(mySlaButton.getPreferredSize()));
-		add(mySlaButton);
-		mySlaButton.setVisible(false);
+			try {
 
-		mySlaButton.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent theEvent) {
+				URI mailto;
+				StringBuilder addresses = new StringBuilder();
+				String[] teacherEmails = theSchoolData.getEmailAddresses();
 
-				try {
-
-					URI mailto;
-					mailto = new URI("mailto:phulst@tacoma.k12.wa.us"
-							+ "?subject="
-							+ myDataStack.getFirst().getCurrentMonth()
-							+ "%20Counts"
-							+ "&body=Attached%20is%20your%20current%20"
-							+ myDataStack.getFirst().getCurrentMonth()
-							+ "%20SLA%20Count");
-					Desktop.getDesktop().mail(mailto);
-
-				} catch (final IOException e) {
-
-					System.err
-							.println("Sorry, can't use the default mail client");
-				} catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				for (int i = 0; i < theSchoolData.getEmailAddresses().length; i++) {
+					addresses.append(teacherEmails[i].trim()).append(";")
+							.append("%20").trimToSize();
 				}
+				System.out.println("Addresses " + addresses.toString());
+				mailto = new URI(buildMailToURI(addresses.toString().trim(),
+						theSchoolData));
+				desktop.mail(mailto);
+
+			} catch (URISyntaxException | IOException e) {
+				JOptionPane.showMessageDialog(null,
+						EMAIL_ERROR + e.getMessage());
 			}
-		});
+
+		} else {
+			throw new RuntimeException(EMAIL_ERROR);
+		}
+	}
+
+	/**
+	 * Method used to construct the MailTo URI.
+	 */
+	private String buildMailToURI(final String theEmailAddress) {
+		return "mailto:" + theEmailAddress + "?subject=" + myCurrentMonth
+				+ "%20Counts" + "&body=Attached%20is%20your%20current%20"
+				+ myCurrentMonth + "%20SLA%20Count";
+	}
+
+	private String buildMailToURI(final String theEmailAddress,
+			final SchoolData theSchoolData) {
+		return "mailto:" + theEmailAddress + "?subject="
+				+ theSchoolData.getCurrentMonth() + "%20Counts"
+				+ "&body=Attached%20is%20your%20current%20"
+				+ theSchoolData.getCurrentMonth() + "%20class%20list"
+				+ "%20for%20" + theSchoolData.getEmailName();
 	}
 
 	/**
@@ -235,7 +311,7 @@ public class OptionToolBar extends JToolBar {
 	 * 
 	 * @return myEmailMap is the list of emails.
 	 */
-	public ArrayList<Email> getEmails() {
+	public List<Email> getEmails() {
 
 		return myEmailList;
 	}

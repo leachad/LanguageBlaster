@@ -31,8 +31,11 @@ import view.LBDate;
  *
  */
 public class LBParser {
-	
-	/** Private field to hold a reference to the Default Instructional Model, should one not exist.*/
+
+	/**
+	 * Private field to hold a reference to the Default Instructional Model,
+	 * should one not exist.
+	 */
 	private static final String DEFAULT_MODEL = "D";
 
 	/**
@@ -40,8 +43,10 @@ public class LBParser {
 	 * rows.
 	 */
 	private Map<String, List<String[]>> myCellMap;
-	
-	/** Private field used to hold a reference to the Language Map used for counting student languages.
+
+	/**
+	 * Private field used to hold a reference to the Language Map used for
+	 * counting student languages.
 	 * 
 	 */
 	private Map<String, Set<NativeLanguage>> myLanguageMap;
@@ -59,7 +64,7 @@ public class LBParser {
 	public Map<String, List<String[]>> getCellMap() {
 		return myCellMap;
 	}
-	
+
 	/**
 	 * Public method to return the Language Map to the caling class.
 	 * 
@@ -87,7 +92,7 @@ public class LBParser {
 		for (int i = 0; i < current.getPhysicalNumberOfRows(); i++) {
 			if (i >= theSelectedStartIndex) {
 				rowBuffer.add(createNewStudent(current.getRow(i)));
-				
+
 			}
 		}
 
@@ -95,13 +100,33 @@ public class LBParser {
 
 	}
 
-//	Debugging
-//	private void printRow(Row theRow) {
-//		Iterator<Cell> cells = theRow.cellIterator();
-//		while (cells.hasNext())
-//			System.out.print(cells.next() + " ");
-//		System.out.println();
-//	}
+	/**
+	 * Public method used to read the potential sorting rows for selection by
+	 * the user.
+	 * 
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 * 
+	 */
+	public List<Row> readPotentialSortingRows(final int theTopRows,
+			final File theFile) throws InvalidFormatException, IOException {
+		final Sheet current = WorkbookFactory.create(theFile).getSheetAt(0);
+		final List<Row> topRows = new ArrayList<>(theTopRows);
+		for (int i = 0; i < theTopRows; i++) {
+			topRows.add(current.getRow(i));
+		}
+
+		return topRows;
+
+	}
+
+	// Debugging
+	// private void printRow(Row theRow) {
+	// Iterator<Cell> cells = theRow.cellIterator();
+	// while (cells.hasNext())
+	// System.out.print(cells.next() + " ");
+	// System.out.println();
+	// }
 
 	/**
 	 * Private method used to create a New Student and return it to the
@@ -111,7 +136,8 @@ public class LBParser {
 	 * @return theNewStudent
 	 */
 	private Student createNewStudent(final Row theCurrentRow) {
-		int studentID = Integer.parseInt(theCurrentRow.getCell(0).getStringCellValue());
+		int studentID = Integer.parseInt(theCurrentRow.getCell(0)
+				.getStringCellValue());
 		String name = theCurrentRow.getCell(1).getStringCellValue();
 		String building = theCurrentRow.getCell(2).getStringCellValue();
 		String bdate = theCurrentRow.getCell(3).getStringCellValue();
@@ -120,9 +146,8 @@ public class LBParser {
 		if (model.length() == 0)
 			model = DEFAULT_MODEL;
 		String grade = theCurrentRow.getCell(6).getStringCellValue();
-		Student current = new Student(studentID, name, building,
-				bdate, language, model.charAt(0), grade);
-				
+		Student current = new Student(studentID, name, building, bdate,
+				language, model.charAt(0), grade);
 
 		return current;
 	}
@@ -149,24 +174,29 @@ public class LBParser {
 				createNewSchoolLanguageMap(currentBuilding);
 				myCellMap.get(currentBuilding).add(
 						createStudentData(theRowBuffer.get(i)));
-				evaluateNativeLanguages(theRowBuffer.get(i).getMyLanguage(), currentBuilding);
+				evaluateNativeLanguages(theRowBuffer.get(i).getMyLanguage(),
+						currentBuilding);
 
 			} else {
 				myCellMap.get(currentBuilding).add(
 						createStudentData(theRowBuffer.get(i)));
-				evaluateNativeLanguages(theRowBuffer.get(i).getMyLanguage(), currentBuilding);
+				evaluateNativeLanguages(theRowBuffer.get(i).getMyLanguage(),
+						currentBuilding);
 			}
 
 		}
 	}
-	
+
 	/**
-	 * Private method used to create a new LanguageMap which will count all the languages in any given
-	 * school.
-	 * @param theCurrentSchool is the title of the current school in question.
+	 * Private method used to create a new LanguageMap which will count all the
+	 * languages in any given school.
+	 * 
+	 * @param theCurrentSchool
+	 *            is the title of the current school in question.
 	 */
 	private void createNewSchoolLanguageMap(final String theCurrentSchool) {
-		myLanguageMap.put(theCurrentSchool, new LinkedHashSet<NativeLanguage>());
+		myLanguageMap
+				.put(theCurrentSchool, new LinkedHashSet<NativeLanguage>());
 	}
 
 	/**
@@ -227,22 +257,25 @@ public class LBParser {
 	private String[] getHeaderCells(final String theCurrentSchool) {
 		return new String[] { HeaderCase.ID_HEADER.text,
 				HeaderCase.NAME_HEADER.text, HeaderCase.BUILDING_HEADER.text,
-				HeaderCase.BIRTHDATE_HEADER.text, HeaderCase.LANGUAGE_HEADER.text,
-				HeaderCase.MODEL_HEADER.text, HeaderCase.GRADE_HEADER.text };
+				HeaderCase.BIRTHDATE_HEADER.text,
+				HeaderCase.LANGUAGE_HEADER.text, HeaderCase.MODEL_HEADER.text,
+				HeaderCase.GRADE_HEADER.text };
 	}
-	
+
 	/**
 	 * 
 	 * TODO This function should be used with writing Private method used to
 	 * build the Set of NativeLanguages for a specific school.
 	 * 
 	 */
-	private void evaluateNativeLanguages(final String theCurrentLanguage, final String theCurrentSchool) {
+	private void evaluateNativeLanguages(final String theCurrentLanguage,
+			final String theCurrentSchool) {
 
 		/*
 		 * Run the set and see if the languages match or don't match.
 		 */
-		final Iterator<NativeLanguage> iterator = myLanguageMap.get(theCurrentSchool).iterator();
+		final Iterator<NativeLanguage> iterator = myLanguageMap.get(
+				theCurrentSchool).iterator();
 		boolean found = false;
 
 		while (iterator.hasNext()) {
@@ -258,7 +291,8 @@ public class LBParser {
 		}
 
 		if (!found) {
-			myLanguageMap.get(theCurrentSchool).add(new NativeLanguage(theCurrentLanguage));
+			myLanguageMap.get(theCurrentSchool).add(
+					new NativeLanguage(theCurrentLanguage));
 		}
 	}
 

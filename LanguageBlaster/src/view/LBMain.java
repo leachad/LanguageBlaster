@@ -3,33 +3,41 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.poi.ss.usermodel.Row;
+
 import resources.ViewResource;
 import file_system.LBFileController;
-import file_system.LocalStorage;
 
 public class LBMain {
 
-	/** Static field to hold a reference to a Dimension Constant.*/
+	/** Static field to hold a reference to a Dimension Constant. */
 	private static final int FRAME_DIMENSION = 700;
-	
+
+	/** Static field to hold a reference to the Gap Constant. */
+	private static final int COMPONENT_GAP_WIDTH = 10;
+
 	/** Static field to hold a header constant. */
-	private static final int HEADER_CONSTANT = 3;
+	private static final int HEADER_CONSTANT = 5;
 
 	/** Private field to hold a reference to a comma delimiter. */
 	private static final String COMMA_DELIMITER = ",";
@@ -43,15 +51,25 @@ public class LBMain {
 	/** Private field to hold an option tool bar. */
 	private OptionToolBar myToolBar;
 
-	/** Private field to hold an ArrayList of schools. */
-	private ArrayList<File> myFileList;
-
-	/** Field to hold an instance of the file controller.*/
+	/** Field to hold an instance of the file controller. */
 	private LBFileController myFileController;
+
+	/** Field to hold a reference to the base panel. */
+	private JPanel myBasePanel;
+	
+	/** Field to hold a reference to the Execute Button.*/
+	private JButton myExecuteButton;
+
+	/**
+	 * Field to hold a list of rows used for aiding the user in selecting the
+	 * row to sort on.
+	 */
+	private List<Row> myTopRows;
 
 	public LBMain() {
 
 		myFileController = new LBFileController();
+		myTopRows = new ArrayList<>(HEADER_CONSTANT);
 
 		start();
 	}
@@ -71,7 +89,7 @@ public class LBMain {
 		myFrame.setVisible(true);
 		myFrame.setResizable(true);
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		myFrame.setPreferredSize(new Dimension(FRAME_DIMENSION, FRAME_DIMENSION / HEADER_CONSTANT));
+		myFrame.setPreferredSize(new Dimension(FRAME_DIMENSION, FRAME_DIMENSION));
 		myFrame.pack();
 		myFrame.setLocationRelativeTo(null);
 
@@ -83,7 +101,7 @@ public class LBMain {
 	private void addToolbar() {
 
 		myToolBar = new OptionToolBar(myFrame, myFileController.getDataStack(),
-				myFileList);
+				myFileController.getFileList(), myFileController.getEmailList());
 		myFrame.add(myToolBar, BorderLayout.SOUTH);
 
 	}
@@ -104,6 +122,8 @@ public class LBMain {
 	 */
 	private JPanel getFileSelector() {
 		final JPanel selectorPanel = new JPanel();
+		selectorPanel.setName(ViewResource.FILE_PANEL.text);
+
 		final JLabel fileLabel = new JLabel(ViewResource.FILE_OUTPUT_LABEL.text);
 		selectorPanel.add(fileLabel);
 		final JTextField displayField = new JTextField();
@@ -125,7 +145,10 @@ public class LBMain {
 					displayField.setText(myFileController
 							.getMyParentFolderPath());
 
-					myFileController.readWorkbook();
+					myTopRows = myFileController
+							.getPotentialSortingRows(HEADER_CONSTANT);
+
+					updateHeaderPanel();
 
 				}
 
@@ -137,6 +160,17 @@ public class LBMain {
 	}
 
 	/**
+	 * Private method used to update the header panel used for selecting the
+	 * appropriate row on which to sort the data.
+	 */
+	private void updateHeaderPanel() {
+		myBasePanel.add(getHeaderPanel());
+		myBasePanel.repaint();
+		myBasePanel.revalidate();
+
+	}
+
+	/**
 	 * Private method to add the components necessary to execute the main point
 	 * of the application. Parsing the workbook and copying pertinent data to
 	 * new excel files.
@@ -145,56 +179,26 @@ public class LBMain {
 	 */
 	private JPanel getExecutionSelector() {
 		final JPanel executePanel = new JPanel();
-		final JButton runButton = new JButton(
+		executePanel.setName(ViewResource.EXECUTION_PANEL.text);
+
+		myExecuteButton = new JButton(
 				ViewResource.RUN_PARSER_BUTTON.text);
-		runButton.addActionListener(new ActionListener() {
+		myExecuteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
-				myFileController.executeBatchPublish();
-				myToolBar.updateDataStack(myFileController.getDataStack());
 
+				myFileController.readWorkbook();
+				myFileController.executeBatchPublish();
+				myToolBar.updateToolBar(myFileController.getDataStack(), myFileController.getEmailList(), myFileController.getFileList());
 				myFileController.closeSummaryWorkBook();
-				
 
 			}
 		});
-		executePanel.add(runButton);
+		executePanel.add(myExecuteButton);
+		myExecuteButton.setEnabled(false);
 
 		return executePanel;
 
-	}
-
-	/**
-	 * Private method to add the top 'n' rows to the display so the user can
-	 * visually select the appropriate row to sort on.
-	 * 
-	 * @return theHeaderPanel
-	 */
-	private JPanel getHeaderPanel() {
-		final JPanel headerPanel = new JPanel();
-		final JComboBox<String> startRowBox = new JComboBox<>(
-				LocalStorage.SELECT_DATA_BEGINNING);
-		startRowBox.addItemListener(new ItemListener() {
-
-			@Override
-			public void itemStateChanged(final ItemEvent theEvent) {
-				String currentSelection = (String) theEvent.getItem();
-				if (!currentSelection
-						.equals(LocalStorage.SELECT_DATA_BEGINNING[0]))
-					myFileController.setStartIndex(Integer
-							.parseInt((String) theEvent.getItem()));
-				else
-					myFileController.setStartIndex(HEADER_CONSTANT);
-			}
-
-		});
-		startRowBox.setSelectedIndex(0);
-		headerPanel.add(startRowBox);
-
-		if (startRowBox.getSelectedIndex() == 0)
-			myFileController.setStartIndex(HEADER_CONSTANT);
-
-		return headerPanel;
 	}
 
 	/**
@@ -204,6 +208,8 @@ public class LBMain {
 	 */
 	private JPanel getSLAPanel() {
 		final JPanel slaPanel = new JPanel();
+		slaPanel.setName(ViewResource.SLA_PANEL.text);
+
 		final JCheckBox writeToSLA = new JCheckBox(
 				ViewResource.WRITE_SLA_PROMPT.text);
 		writeToSLA.addItemListener(new ItemListener() {
@@ -225,14 +231,36 @@ public class LBMain {
 		slaPanel.add(writeToSLA);
 		return slaPanel;
 	}
-	
+
 	/**
 	 * Private method used to get Header Widgets.
 	 * 
 	 * @return theHeaderWidgetPanel
 	 */
-	private JPanel getHeaderWidgets() {
-		return null;
+	private JPanel getHeaderPanel() {
+		final JPanel headerPanel = new JPanel(new GridLayout(0,
+				myTopRows.size()));
+		headerPanel.setName(ViewResource.HEADER_PANEL.text);
+
+		GroupLayout groupLayout = new GroupLayout(headerPanel);
+		headerPanel.setLayout(groupLayout);
+		ParallelGroup pGroup = groupLayout.createParallelGroup();
+		groupLayout.setHorizontalGroup(pGroup);
+		SequentialGroup sGroup = groupLayout.createSequentialGroup();
+		groupLayout.setVerticalGroup(sGroup);
+
+		ButtonGroup buttonGroup = new ButtonGroup();
+		for (int i = 0; i < myTopRows.size(); i++) {
+			HeaderButton current = new HeaderButton(i, myTopRows.get(i));
+			buttonGroup.add(current);
+			pGroup.addComponent(current);
+			sGroup.addComponent(current, GroupLayout.PREFERRED_SIZE,
+					GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE);
+			current.addItemListener(new RadioListener(i));
+			sGroup.addGap(COMPONENT_GAP_WIDTH);
+
+		}
+		return headerPanel;
 	}
 
 	/**
@@ -240,19 +268,38 @@ public class LBMain {
 	 */
 	private void addComponents() {
 
-		final JPanel searchPanel = new JPanel();
-		searchPanel.setPreferredSize(myFrame.getSize());
-		searchPanel.setBackground(Color.gray);
+		myBasePanel = new JPanel();
+		myBasePanel.setName(ViewResource.BASE_PANEL.text);
+		myBasePanel.setPreferredSize(myFrame.getSize());
+		myBasePanel.setBackground(Color.gray);
 
-		searchPanel.add(getDatePicker());
-		searchPanel.add(getFileSelector());
-		searchPanel.add(getExecutionSelector());
-		searchPanel.add(getHeaderPanel());
-		searchPanel.add(getSLAPanel());
-		searchPanel.add(getHeaderWidgets());
+		myBasePanel.add(getDatePicker());
+		myBasePanel.add(getFileSelector());
+		myBasePanel.add(getExecutionSelector());
+		myBasePanel.add(getSLAPanel());
 
-		//TODO Add a MenuBar and more rigid framelayout
-		myFrame.add(searchPanel, BorderLayout.CENTER);
+		// TODO Add a MenuBar and more rigid framelayout
+		myFrame.add(myBasePanel, BorderLayout.CENTER);
+
+	}
+
+	private class RadioListener implements ItemListener {
+
+		private int myIndex;
+
+		private RadioListener(final int theIndex) {
+			myIndex = theIndex;
+		}
+
+		@Override
+		public void itemStateChanged(ItemEvent theEvent) {
+			if (theEvent.getStateChange() == ItemEvent.SELECTED) {
+				System.out.println("I selected " + myIndex);
+				myFileController.setStartIndex(myIndex + 1);
+				myExecuteButton.setEnabled(true);
+			}
+
+		}
 
 	}
 

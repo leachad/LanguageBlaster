@@ -3,8 +3,16 @@
  */
 package file_system;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import model.Email;
 import view.LBDate;
 
 /**
@@ -15,15 +23,27 @@ public class LocalStorage {
 
 	/** static field to hold a reference to the store path. */
 	private static final String STORAGE_PATH = "G:\\groups\\Elem Education\\ESL";
-	
+
+	private static final String EMAIL_PATH = System.getProperty("user.dir")
+			.concat("\\src\\emailList.txt");
+
+	private static final String EMAIL_ERROR = "Sorry, couldn't read the flat file of emails...\n";
+
+	private static final String DELIMITER_ONE = ",";
+
+	private static final String DELIMITER_TWO = ";";
+
 	/** static field to hold the SLA Blank. */
 	private static final String SLA_BLANK_PATH = "G:\\groups\\Elem Education\\ESL\\SLA Blank [DO NOT MOVE OR DELETE]\\SLA_Blank.xls";
-	
+
 	public static File myOutputFolder;
 
+	private static List<Email> myEmailList;
+
 	/** Static field to hold a day array. */
-	public static final String[] SELECT_DATA_BEGINNING = {"SELECT ROW TO START", "1", "2", "3",
-			"4", "5", "6", "7", "8", "9", "10"};
+	public static final String[] SELECT_DATA_BEGINNING = {
+			"SELECT ROW TO START", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"10" };
 
 	/**
 	 * Private method to create a directory used to store all newly created
@@ -42,9 +62,78 @@ public class LocalStorage {
 		return myOutputFolder.toString();
 
 	}
-	
+
+	/**
+	 * Method used to return the list of emails to the calling code.
+	 */
+	public static List<Email> getEmailList() {
+		if (myEmailList != null)
+			return myEmailList;
+		else
+			return readEmailFile();
+	}
+
+	private static List<Email> readEmailFile() {
+		List<Email> emailList = new ArrayList<>();
+		try {
+			final BufferedReader reader = new BufferedReader(new FileReader(
+					new File(EMAIL_PATH)));
+
+			while (reader.ready()) {
+
+				final String line = reader.readLine();
+				emailList.add(parseLine(line, false));
+
+			}
+			myEmailList = emailList;
+			reader.close();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, EMAIL_ERROR + e.getMessage());
+		}
+
+		return emailList;
+
+	}
+
+	/**
+	 * Private method to parse a new line from the email document.
+	 * 
+	 * @param theLine
+	 *            is the string to parse.
+	 * @param isOutgoing
+	 *            is the boolean determining if the write is out bound or the
+	 *            read is in bound. true is out bound.
+	 */
+	private static Email parseLine(final String theLine,
+			final boolean isOutgoing) {
+
+		final String[] firstSplit = theLine.split(DELIMITER_ONE); // split the
+																	// line
+
+		final String school = firstSplit[0].trim(); // save the school
+
+		String[] emails = new String[firstSplit[1].split(DELIMITER_TWO).length];
+		if (!isOutgoing) {
+			String[] secondSplit = firstSplit[1].split(DELIMITER_TWO);
+			for (int i = 0; i < secondSplit.length; i++) {
+				emails[i] = secondSplit[i];
+			}
+
+		} else {
+			String[] secondSplit = firstSplit[1].split(DELIMITER_TWO);
+			for (int i = 0; i < secondSplit.length; i++) {
+				emails[i] = secondSplit[i];
+			}
+
+		}
+
+		return new Email(school, emails);
+
+	}
+
 	/**
 	 * Returns the File Path of the SLA Blank XLS Book.
+	 * 
 	 * @return theSLABlankPath
 	 */
 	public static String getSLABlankPath() {
