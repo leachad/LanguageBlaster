@@ -39,12 +39,22 @@ public class LocalStorage {
 	public static File myOutputFolder;
 
 	private static List<Email> myEmailList;
+	
+	private static int myNumColumns;
 
 	/** Static field to hold a day array. */
 	public static final String[] SELECT_DATA_BEGINNING = {
 			"SELECT ROW TO START", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 			"10" };
 
+	
+	public static void setNumColumns(final int theColumns) {
+		myNumColumns = theColumns;
+	}
+	
+	public static int getNumColumns() {
+		return myNumColumns;
+	}
 	/**
 	 * Private method to create a directory used to store all newly created
 	 * excel books.
@@ -61,6 +71,10 @@ public class LocalStorage {
 
 		return myOutputFolder.toString();
 
+	}
+	
+	public static String getOutputDirectory() {
+		return myOutputFolder.toString();
 	}
 
 	/**

@@ -19,6 +19,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
+import resources.FileResource;
+import resources.ViewResource;
+import exceptions.BlasterError;
+import file_system.LocalStorage;
 import model.Email;
 import model.SchoolData;
 
@@ -30,9 +34,19 @@ import model.SchoolData;
  *
  */
 public class OptionToolBar extends JToolBar {
+	
+	private static final double FRAME_SCALAR = 1.5;
 
 	/** Private field to hold the email Address of the Office Coordinator. */
 	private static final String OFFICE_ADMIN_ADDRESS = "phulst@tacoma.k12.wa.us";
+	
+	private static final String EMAIL_SUBJECT = "SLA%20Count";
+	
+	private static final String EMAIL_BODY = "Attached%20is%20your%20current%20";
+	
+	private static final String EMAIL_BODY_TEACHER = "Attached%20is%20your%20current%20";
+	
+	private static final String EMAIL_BODY_LIST = "%20class%20list%20for%20";
 
 	/** Private field to hold an Error Message. */
 	private static final String EMAIL_ERROR = "Sorry, there was a problem executing your request";
@@ -61,17 +75,18 @@ public class OptionToolBar extends JToolBar {
 
 	/** Private field to hold an email sla to pam button. */
 	private JButton mySlaButton;
-	
-	/** Private field used to hold an email button.*/
+
+	/** Private field used to hold an email button. */
 	private JButton myEmailButton;
-	
-	/** Private field to hold a reference to the print button.*/
+
+	/** Private field to hold a reference to the print button. */
 	private JButton myPrintButton;
+
+	/** Private field used to hold the result button. */
+	private JButton myResultButton;
 
 	/** Private field to hold a reference to the Current Month. */
 	private String myCurrentMonth;
-	
-	
 
 	/**
 	 * Serial ID.
@@ -107,28 +122,57 @@ public class OptionToolBar extends JToolBar {
 		myEmailButton.setEnabled(true);
 		mySlaButton.setEnabled(true);
 		myPrintButton.setEnabled(true);
+		myResultButton.setEnabled(true);
 	}
 
 	/**
 	 * Private method to add components to the toolbar.
 	 */
 	private void addComponents() {
-	
+
 		add(getEditEmailButton());
 		add(getEmailButton());
 		add(getSLAButton());
 		add(getPrintButton());
-		
-		
-		
+		add(getResultButton());
+
 	}
-	
+
+	/**
+	 * Private method used to return a Result Button to the the OptionToolBar
+	 * which can be moved around at the User's discretion.
+	 */
+	private JButton getResultButton() {
+		myResultButton = new JButton(ViewResource.VIEW_FILE_BUTTON.text);
+		myResultButton.setEnabled(false);
+		myResultButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent theEvent) {
+				Process p;
+				try {
+					p = Runtime.getRuntime().exec(
+							ViewResource.VIEW_FILES_CMD.text
+									+ LocalStorage.getOutputDirectory());
+					p.waitFor();
+				} catch (IOException | InterruptedException e) {
+					JOptionPane.showMessageDialog(null, BlasterError.EXEC_ERROR
+							+ e.getMessage());
+				}
+				;
+
+			}
+		});
+
+		return myResultButton;
+	}
+
 	/**
 	 * Method used to build the email button.
+	 * 
 	 * @return the button used populate email client windows
 	 */
 	private JButton getEmailButton() {
-		myEmailButton = new JButton("Email Lists");
+		myEmailButton = new JButton(ViewResource.EMAIL_LISTS_BUTTON.text);
 		myEmailButton.setEnabled(false);
 		myEmailButton.setSize(new Dimension(myEmailButton.getPreferredSize()));
 
@@ -144,16 +188,17 @@ public class OptionToolBar extends JToolBar {
 				}
 			}
 		});
-		
+
 		return myEmailButton;
 	}
-	
+
 	/**
 	 * Method used to build the SLA button.
+	 * 
 	 * @return the button used to bring up email Client to emailSLA to Pam.
 	 */
 	private JButton getSLAButton() {
-		mySlaButton = new JButton("Email SLA to Pam");
+		mySlaButton = new JButton(ViewResource.EMAIL_SLA_BUTTON.text);
 		mySlaButton.setSize(new Dimension(mySlaButton.getPreferredSize()));
 		mySlaButton.setEnabled(false);
 
@@ -172,19 +217,20 @@ public class OptionToolBar extends JToolBar {
 				}
 			}
 		});
-		
+
 		return mySlaButton;
 	}
-	
+
 	/**
-	 * Method used to build the print  button.
+	 * Method used to build the print button.
+	 * 
 	 * @return the button used to print all files constructed using LBWriter
 	 */
 	private JButton getPrintButton() {
-		myPrintButton = new JButton("Print Lists");
+		myPrintButton = new JButton(ViewResource.PRINT_LISTS_BUTTON.text);
 		myPrintButton.setSize(new Dimension(myPrintButton.getPreferredSize()));
 		myPrintButton.setEnabled(false);
-		
+
 		myPrintButton.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent theEvent) {
 
@@ -202,18 +248,19 @@ public class OptionToolBar extends JToolBar {
 		});
 		return myPrintButton;
 	}
-	
+
 	/**
 	 * Method used to build the edit email button.
+	 * 
 	 * @return the button used to bring up the edit email frame
 	 */
 	private JButton getEditEmailButton() {
-		final JButton editEmails = new JButton("Edit Emails");
+		final JButton editEmails = new JButton(ViewResource.EDIT_EMAILS_BUTTON.text);
 		editEmails.setSize(new Dimension(editEmails.getPreferredSize()));
-		
+
 		final JFrame frame = new JFrame();
 		final EmailPanel eP = new EmailPanel();
-		
+
 		myEmailList = eP.getEmails();
 		// opens up a new email window.
 		editEmails.addActionListener(new ActionListener() {
@@ -221,8 +268,8 @@ public class OptionToolBar extends JToolBar {
 			public void actionPerformed(final ActionEvent theEvent) {
 
 				frame.add(eP);
-				frame.setSize(new Dimension((int) (myFrame.getWidth() * 1.5),
-						(int) (myFrame.getHeight() * 1.5)));
+				frame.setSize(new Dimension((int) (myFrame.getWidth() * FRAME_SCALAR),
+						(int) (myFrame.getHeight() * FRAME_SCALAR)));
 				frame.setVisible(true);
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				frame.setLocationRelativeTo(myFrame);
@@ -270,10 +317,10 @@ public class OptionToolBar extends JToolBar {
 				String[] teacherEmails = theSchoolData.getEmailAddresses();
 
 				for (int i = 0; i < theSchoolData.getEmailAddresses().length; i++) {
-					addresses.append(teacherEmails[i].trim()).append(";")
-							.append("%20").trimToSize();
+					addresses.append(teacherEmails[i].trim()).append(FileResource.SEMI_COLON.text)
+							.append(FileResource.ENCODED_SPACE.text).trimToSize();
 				}
-				System.out.println("Addresses " + addresses.toString());
+				
 				mailto = new URI(buildMailToURI(addresses.toString().trim(),
 						theSchoolData));
 				desktop.mail(mailto);
@@ -292,18 +339,22 @@ public class OptionToolBar extends JToolBar {
 	 * Method used to construct the MailTo URI.
 	 */
 	private String buildMailToURI(final String theEmailAddress) {
-		return "mailto:" + theEmailAddress + "?subject=" + myCurrentMonth
-				+ "%20Counts" + "&body=Attached%20is%20your%20current%20"
-				+ myCurrentMonth + "%20SLA%20Count";
+		return FileResource.MAIL_TO.text + theEmailAddress + FileResource.START_ARGS.text 
+				+ FileResource.SUBJECT.text + FileResource.ASSIGN_ARGS.text
+				+ myCurrentMonth + FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT 
+				+ FileResource.APPEND_ARGS.text + FileResource.BODY.text
+				+ FileResource.ASSIGN_ARGS.text + EMAIL_BODY
+				+ myCurrentMonth + EMAIL_SUBJECT;
 	}
 
 	private String buildMailToURI(final String theEmailAddress,
-			final SchoolData theSchoolData) {
-		return "mailto:" + theEmailAddress + "?subject="
-				+ theSchoolData.getCurrentMonth() + "%20Counts"
-				+ "&body=Attached%20is%20your%20current%20"
-				+ theSchoolData.getCurrentMonth() + "%20class%20list"
-				+ "%20for%20" + theSchoolData.getEmailName();
+			final SchoolData theSchoolData) {	
+		return FileResource.MAIL_TO.text + theEmailAddress + FileResource.START_ARGS.text 
+		+ FileResource.SUBJECT.text + FileResource.ASSIGN_ARGS.text
+		+ theSchoolData.getCurrentMonth() + FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT 
+		+ FileResource.APPEND_ARGS.text + FileResource.BODY.text
+		+ FileResource.ASSIGN_ARGS.text + EMAIL_BODY_TEACHER
+		+ theSchoolData.getCurrentMonth() + EMAIL_BODY_LIST + theSchoolData.getEmailName();
 	}
 
 	/**

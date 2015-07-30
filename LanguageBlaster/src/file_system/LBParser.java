@@ -112,21 +112,17 @@ public class LBParser {
 			final File theFile) throws InvalidFormatException, IOException {
 		final Sheet current = WorkbookFactory.create(theFile).getSheetAt(0);
 		final List<Row> topRows = new ArrayList<>(theTopRows);
+		int maxColumns = 0;
 		for (int i = 0; i < theTopRows; i++) {
+			if (current.getRow(i).getPhysicalNumberOfCells() > maxColumns)
+				maxColumns = current.getRow(i).getPhysicalNumberOfCells();
 			topRows.add(current.getRow(i));
 		}
 
+		LocalStorage.setNumColumns(maxColumns);
 		return topRows;
 
 	}
-
-	// Debugging
-	// private void printRow(Row theRow) {
-	// Iterator<Cell> cells = theRow.cellIterator();
-	// while (cells.hasNext())
-	// System.out.print(cells.next() + " ");
-	// System.out.println();
-	// }
 
 	/**
 	 * Private method used to create a New Student and return it to the

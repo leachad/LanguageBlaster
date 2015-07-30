@@ -5,9 +5,10 @@ package model;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -16,23 +17,31 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
+import resources.FileResource;
+import exceptions.BlasterError;
+
 /**
  * 
- * This class wwrites all the 
+ * This class wwrites all the
+ * 
  * @author Andrew Leach
  * @version 1.0.
  *
  */
 public class SLACount {
 
-	/** Private field to hold the constant where the other row is 
-	 * found on the SLA Sheet.
+	/**
+	 * Private field to hold the constant where the other row is found on the
+	 * SLA Sheet.
 	 */
 	private static final int OTHER_ROW_INDEX = 61;
-	
-	/** Private field to hold a date row constant.*/
+
+	/** Private field to hold a date row constant. */
 	private static final int DATE_ROW_INDEX = 1;
-	
+
+	/** Privaet field to hold a reference to the file name. */
+	private static final String FILE_NAME = "SLA_COUNT";
+
 	/** Private field to hold an instance of a language. */
 	private final SLACounter myVietCounter = new SLACounter(1);
 
@@ -71,8 +80,8 @@ public class SLACount {
 
 	/** Private field to hold a reference to the file path. */
 	private final String inFilePath;
-	
-	/** Private field to hold the date that the report is run.*/
+
+	/** Private field to hold the date that the report is run. */
 	private final String myReportDate;
 
 	private FileOutputStream myOutput;
@@ -89,11 +98,13 @@ public class SLACount {
 	/** Private field to hold a reference to the file path. */
 	private String outFilePath;
 
-	public SLACount(final String theFilePath, final String theDirectory, final String theReportDate) {
+	public SLACount(final String theFilePath, final String theDirectory,
+			final String theReportDate) {
 
 		inFilePath = theFilePath;
 		outFilePath = theDirectory.concat(File.separator).concat(
-				"SLA_COUNT.xls");
+				FILE_NAME + FileResource.EXT_CONCAT.text
+						+ FileResource.XLS.text);
 		myReportDate = theReportDate;
 		createWorkSheet();
 		createOutputFile();
@@ -117,19 +128,19 @@ public class SLACount {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Private method to write the date that the report is run and distributed
 	 * monthly for the ESL teachers.
 	 */
 	private void writeReportDate() {
-		
+
 		for (Row row : mySLASheet) {
-			
+
 			if (row.getRowNum() == DATE_ROW_INDEX) {
-				
+
 				for (Cell cell : row) {
-					
+
 					if (cell.getColumnIndex() == 0) {
 						cell.setAsActiveCell();
 						cell.setCellValue(myReportDate);
@@ -150,7 +161,7 @@ public class SLACount {
 			myOutput = new FileOutputStream(new File(outFilePath));
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, BlasterError.READ_ERROR.text);
 		}
 
 	}
@@ -161,7 +172,7 @@ public class SLACount {
 	 */
 	public void writeToSheet(final String theLanguage, String theSchool,
 			final int theCount) {
-		//System.out.println(theSchool);
+		// System.out.println(theSchool);
 		int columnIndex = 0;
 
 		boolean schoolFound = false;
@@ -173,98 +184,80 @@ public class SLACount {
 
 			for (Cell cell : row) {
 
-				if (cell.getColumnIndex() == 0 
+				if (cell.getColumnIndex() == 0
 						& cell.getCellType() == Cell.CELL_TYPE_STRING) {
-								
-					final String name = theSchool.substring(theSchool.indexOf("-") + 1).trim();
-					//System.out.println("School name is " + theSchool + "--Cell " + cell.getStringCellValue());
-					columnIndex = chooseLanguage(theLanguage);
-					
-					if (columnIndex < myOtherCounter.getIndex()
-							&& chooseSchool(cell.getStringCellValue().trim(), name)) {
 
-						//System.out.println("C-SCHOOL " + cell.getStringCellValue() + " SCHOOL --> " + theSchool + " LANGUAGE --> " + theLanguage);
+					final String name = theSchool.substring(
+							theSchool.indexOf("-") + 1).trim();
+					columnIndex = chooseLanguage(theLanguage);
+
+					if (columnIndex < myOtherCounter.getIndex()
+							&& chooseSchool(cell.getStringCellValue().trim(),
+									name)) {
 						schoolFound = true;
 
-					} else if (columnIndex == myOtherCounter.getIndex() 
-							&& chooseSchool(cell.getStringCellValue().trim(), name)) {
-						////System.out.println("C-SCHOOL " + cell.getStringCellValue() + " SCHOOL --> " + theSchool + " LANGUAGE --> " + theLanguage);
+					} else if (columnIndex == myOtherCounter.getIndex()
+							&& chooseSchool(cell.getStringCellValue().trim(),
+									name)) {
 						otherLanguage = true;
 
 					} else if (columnIndex < myOtherCounter.getIndex()
 							&& findOther(name)
-							&& row.getRowNum() == OTHER_ROW_INDEX){
-						//System.out.println("Row is " + row.getRowNum() + "column-->" + columnIndex +" language--> " + theLanguage);
+							&& row.getRowNum() == OTHER_ROW_INDEX) {
 						otherSchool = true;
 
 					} else if (columnIndex == myOtherCounter.getIndex()
 							&& findOther(name)
 							&& row.getRowNum() == OTHER_ROW_INDEX) {
-						//System.out.println("!!!Other other--Row is " + row.getRowNum() + "column-->" + columnIndex+ " language--> " + theLanguage);
 						otherOther = true;
 
 					}
 
-
 				} else {
 
-					if (schoolFound
-							&& cell.getColumnIndex() == columnIndex) {
+					if (schoolFound && cell.getColumnIndex() == columnIndex) {
 
-						//cell.setCellType(Cell.CELL_TYPE_STRING);
 						cell.setAsActiveCell();
 						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 						cell.setCellValue((int) theCount);
-						
-						System.out.println(theSchool + " " + cell.getNumericCellValue());
 
 						schoolFound = false;
 
+					} else if (otherLanguage
+							&& cell.getColumnIndex() == columnIndex) {
 
-					} else if (otherLanguage && cell.getColumnIndex() == columnIndex) {
-
-						
 						int otherCount = (int) cell.getNumericCellValue();
 						otherCount = otherCount + theCount;
-						
+
 						cell.setAsActiveCell();
 						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 						cell.setCellValue(otherCount);
-						//cell.setAsActiveCell();
-
 
 						otherCount = 0;
 						otherLanguage = false;
 
-
 					} else if (otherSchool
 							&& cell.getColumnIndex() == columnIndex) {
-						System.out.println("OTHERSCHOOL--->Index " + columnIndex);
 						int otherCount = (int) cell.getNumericCellValue();
 						otherCount = otherCount + theCount;
-						
+
 						cell.setAsActiveCell();
 						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 						cell.setCellValue(otherCount);
-						System.out.println("OTHER SCHOOL cell value " + cell.getNumericCellValue());
-						//cell.setAsActiveCell();
-						
+
 						otherSchool = false;
 
 					} else if (otherOther
 							&& cell.getColumnIndex() == columnIndex) {
-						System.out.println("OTHEROTHER--->Index	" + columnIndex);
 						int otherCount = (int) cell.getNumericCellValue();
 						otherCount = otherCount + theCount;
-						
+
 						cell.setAsActiveCell();
 						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 						cell.setCellValue(otherCount);
-						System.out.println("OTHER OTHER cell value " + cell.getNumericCellValue());
-						//cell.setAsActiveCell();
-		
+
 						otherCount = 0;
-						
+
 						otherOther = false;
 					}
 				}
@@ -272,36 +265,34 @@ public class SLACount {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Private method to find the other equivalents.
 	 */
 	private boolean findOther(final String theSchool) {
-		
-		
+
 		boolean other = false;
-		switch(theSchool) {
-		case"Exit Release":
+		switch (theSchool) {
+		case "Exit Release":
 			other = true;
 			break;
-		case"Re-engagement Center":
+		case "Re-engagement Center":
 			other = true;
 			break;
-		case"Day Reporting School":
+		case "Day Reporting School":
 			other = true;
 			break;
-		case"Home-Based":
+		case "Home-Based":
 			other = true;
-			break;	
+			break;
 		}
-		
+
 		return other;
 	}
 
 	/**
-	 * Private method to choose whether or not this school is equal to 
-	 * the string cell value. 
+	 * Private method to choose whether or not this school is equal to the
+	 * string cell value.
 	 */
 	private boolean chooseSchool(final String theCell, final String theSchool) {
 
@@ -365,30 +356,28 @@ public class SLACount {
 	 */
 	public void closeBook() {
 
-		FormulaEvaluator evaluator = mySlaBook.getCreationHelper().createFormulaEvaluator();
-		for(int sheetNum = 0; sheetNum < mySlaBook.getNumberOfSheets(); sheetNum++) {
+		FormulaEvaluator evaluator = mySlaBook.getCreationHelper()
+				.createFormulaEvaluator();
+		for (int sheetNum = 0; sheetNum < mySlaBook.getNumberOfSheets(); sheetNum++) {
 			Sheet sheet = mySlaBook.getSheetAt(sheetNum);
-			for(Row r : sheet) {
-				for(Cell c : r) {
-					if(c.getCellType() == Cell.CELL_TYPE_FORMULA) {
+			for (Row r : sheet) {
+				for (Cell c : r) {
+					if (c.getCellType() == Cell.CELL_TYPE_FORMULA) {
 						evaluator.evaluateFormulaCell(c);
 					}
 				}
 			}
 		}
-		
+
 		try {
 
 			mySlaBook.write(myOutput);
 			myOutput.close();
 
-		} catch (final FileNotFoundException e) {
-			e.printStackTrace();
+		} catch (final IOException e) {
+			JOptionPane.showMessageDialog(null, BlasterError.READ_ERROR.text);
 
-		} catch (IOException e) {
-			e.printStackTrace();
-
-		}
+		} 
 	}
 
 	/**

@@ -3,7 +3,7 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -19,22 +19,24 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.ss.usermodel.Row;
 
+import resources.FileResource;
 import resources.ViewResource;
 import file_system.LBFileController;
 
 public class LBMain {
 
-	/** Static field to hold a reference to a Dimension Constant. */
-	private static final int FRAME_DIMENSION = 700;
+	/** Static field to hold a referencw to a Tookmit.*/
+	private static final Toolkit TOOL_KIT = Toolkit.getDefaultToolkit();
 
 	/** Static field to hold a reference to the Gap Constant. */
-	private static final int COMPONENT_GAP_WIDTH = 10;
+	private static final int COMPONENT_GAP_WIDTH = 0;
+	
+	private static final int FRAME_SCALAR = 5;
 
 	/** Static field to hold a header constant. */
 	private static final int HEADER_CONSTANT = 5;
@@ -44,6 +46,8 @@ public class LBMain {
 
 	/** Private field to hold a reference to a space delimiter. */
 	private static final String SPACE_DELIMITER = " ";
+	
+	private static final String FILTER_TITLE = "Spreadsheet File Types";
 
 	/** Private field to hold a JFrame for showing all of the GUI elements. */
 	private JFrame myFrame;
@@ -84,12 +88,13 @@ public class LBMain {
 
 		addToolbar();
 
+		addMenu();
 		addComponents();
 
 		myFrame.setVisible(true);
 		myFrame.setResizable(true);
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		myFrame.setPreferredSize(new Dimension(FRAME_DIMENSION, FRAME_DIMENSION));
+		myFrame.setPreferredSize(new Dimension((int)TOOL_KIT.getScreenSize().getWidth(), (int)TOOL_KIT.getScreenSize().getHeight() / FRAME_SCALAR));
 		myFrame.pack();
 		myFrame.setLocationRelativeTo(null);
 
@@ -104,6 +109,14 @@ public class LBMain {
 				myFileController.getFileList(), myFileController.getEmailList());
 		myFrame.add(myToolBar, BorderLayout.SOUTH);
 
+	}
+	
+	/**
+	 * Private method to add a MenuBar to the GUI using a separately build class.
+	 */
+	private void addMenu() {
+		LBMenu theMenuBar = new LBMenu();
+		myFrame.setJMenuBar(theMenuBar);
 	}
 
 	/**
@@ -124,12 +137,6 @@ public class LBMain {
 		final JPanel selectorPanel = new JPanel();
 		selectorPanel.setName(ViewResource.FILE_PANEL.text);
 
-		final JLabel fileLabel = new JLabel(ViewResource.FILE_OUTPUT_LABEL.text);
-		selectorPanel.add(fileLabel);
-		final JTextField displayField = new JTextField();
-		displayField.setColumns(20);
-		selectorPanel.add(displayField);
-
 		final JButton selectButton = new JButton(
 				ViewResource.READ_BOOK_BUTTON.text);
 		selectButton.addActionListener(new ActionListener() {
@@ -137,13 +144,12 @@ public class LBMain {
 			public void actionPerformed(final ActionEvent theEvent) {
 				JFileChooser chooser = new JFileChooser(
 						ViewResource.READ_BOOK_BUTTON.text);
+				chooser.setFileFilter(getExcelFilter());
 
 				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 
 					myFileController.setMonthlyMasterFilePath(chooser
 							.getSelectedFile());
-					displayField.setText(myFileController
-							.getMyParentFolderPath());
 
 					myTopRows = myFileController
 							.getPotentialSortingRows(HEADER_CONSTANT);
@@ -238,8 +244,7 @@ public class LBMain {
 	 * @return theHeaderWidgetPanel
 	 */
 	private JPanel getHeaderPanel() {
-		final JPanel headerPanel = new JPanel(new GridLayout(0,
-				myTopRows.size()));
+		final JPanel headerPanel = new JPanel();
 		headerPanel.setName(ViewResource.HEADER_PANEL.text);
 
 		GroupLayout groupLayout = new GroupLayout(headerPanel);
@@ -251,16 +256,25 @@ public class LBMain {
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 		for (int i = 0; i < myTopRows.size(); i++) {
-			HeaderButton current = new HeaderButton(i, myTopRows.get(i));
-			buttonGroup.add(current);
+			HeaderRow current = new HeaderRow(i, myTopRows.get(i));
+			buttonGroup.add(current.getSelector());
 			pGroup.addComponent(current);
 			sGroup.addComponent(current, GroupLayout.PREFERRED_SIZE,
 					GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE);
-			current.addItemListener(new RadioListener(i));
+			current.getSelector().addItemListener(new RadioListener(i));
 			sGroup.addGap(COMPONENT_GAP_WIDTH);
 
 		}
+		
 		return headerPanel;
+	}
+	
+	/**
+	 * Private method to return a FileNameExtensionFilter consisting of 
+	 * common Spreadsheet File Types.
+	 */
+	private FileNameExtensionFilter getExcelFilter() {
+		return new FileNameExtensionFilter(FILTER_TITLE, FileResource.XLS.text, FileResource.XLSX.text, FileResource.ODT.text);
 	}
 
 	/**
@@ -278,7 +292,6 @@ public class LBMain {
 		myBasePanel.add(getExecutionSelector());
 		myBasePanel.add(getSLAPanel());
 
-		// TODO Add a MenuBar and more rigid framelayout
 		myFrame.add(myBasePanel, BorderLayout.CENTER);
 
 	}
@@ -294,7 +307,6 @@ public class LBMain {
 		@Override
 		public void itemStateChanged(ItemEvent theEvent) {
 			if (theEvent.getStateChange() == ItemEvent.SELECTED) {
-				System.out.println("I selected " + myIndex);
 				myFileController.setStartIndex(myIndex + 1);
 				myExecuteButton.setEnabled(true);
 			}

@@ -31,6 +31,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 
+import exceptions.BlasterError;
+import resources.FileResource;
+import resources.ViewResource;
 import view.LBDate;
 
 /**
@@ -38,9 +41,6 @@ import view.LBDate;
  *
  */
 public class LBWriter {
-
-	/** Static field to hold a reference to an error message. */
-	private static final String WORKBOOK_ERROR_MESSAGE = "Unable to create Workbook: ";
 	
 	/** Static field to hold a reference to a total label for display. */
 	private static final String LABEL_TOTAL = "Total ";
@@ -109,7 +109,6 @@ public class LBWriter {
 			final Map<String, Set<NativeLanguage>> theLanguageMap) {
 		Iterator<String> keySetIterator = theCellMap.keySet().iterator();
 		mySLACount = theSLACount;
-		System.out.println("WRITING COUNT DATA TO FILE SYSTEM.");
 		
 		while (keySetIterator.hasNext()) {
 			String currentSchool = keySetIterator.next();
@@ -119,7 +118,7 @@ public class LBWriter {
 
 		}
 		
-		JOptionPane.showMessageDialog(null, "COMPLETED BATCH PUBLISH");
+		JOptionPane.showMessageDialog(null, ViewResource.BATCH_COMPLETE_ALERT.text);
 
 	}
 
@@ -134,17 +133,17 @@ public class LBWriter {
 
 		Workbook currentBook = new HSSFWorkbook();
 
-		final String[] schoolName = theCurrentSchool.split("-");
+		final String[] schoolName = theCurrentSchool.split(FileResource.DASH.text);
 
 		myCurrentFilePath = LocalStorage.myOutputFolder.getAbsolutePath()
 				.concat(File.separator).concat(schoolName[1].trim())
-				.concat(".xls");
+				.concat(FileResource.EXT_CONCAT.text + FileResource.XLS.text);
 
 		myOutputStream = new FileOutputStream(myCurrentFilePath);
 
 		final String name = WorkbookUtil.createSafeSheetName(LBDate
-				.getCurrentMonth().concat(" ").concat(LBDate.getCurrentYear())
-				.concat("--").concat(theCurrentSchool));
+				.getCurrentMonth().concat(FileResource.SPACE.text).concat(LBDate.getCurrentYear())
+				.concat(FileResource.DASH.text + FileResource.DASH.text).concat(theCurrentSchool));
 		final Sheet currentSheet = currentBook.createSheet(name);
 
 		final HSSFPrintSetup printSetup = (HSSFPrintSetup) currentSheet
@@ -218,7 +217,7 @@ public class LBWriter {
 			closeStream(currentBook, theCurrentSchool, theLanguages);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,
-					WORKBOOK_ERROR_MESSAGE + e.getCause());
+					BlasterError.CREATE_ERROR.text + e.getCause());
 		}
 
 	}
@@ -239,11 +238,11 @@ public class LBWriter {
 
 		}
 
-		final String[] schoolName = theCurrentSchool.split("-");
+		final String[] schoolName = theCurrentSchool.split(FileResource.DASH.text);
 
 		myFileList.add(new File(LocalStorage.myOutputFolder.getAbsolutePath()
 				.concat(File.separator).concat(schoolName[1].trim())
-				.concat(".xls")));
+				.concat(FileResource.EXT_CONCAT.text + FileResource.XLS.text)));
 
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -278,7 +277,7 @@ public class LBWriter {
 					.getSchool()
 					.equalsIgnoreCase(
 							theCurrentSchool.substring(
-									theCurrentSchool.indexOf("-") + 1,
+									theCurrentSchool.indexOf(FileResource.DASH.text) + 1,
 									theCurrentSchool.length()).trim())) {
 
 				index = i;
@@ -314,7 +313,6 @@ public class LBWriter {
 				theLanguage.getLanguageLabel());
 
 		runningCount = theLanguage.getCountLabel() + theCurrentTotal;
-		System.out.println("Running Count is " + runningCount + " count label in set is " + theLanguage.getCountLabel() + " current count is " + theCurrentTotal);
 		newRow.createCell(LANGUAGE_CONSTANT + 1).setCellValue(
 				theLanguage.getCountLabel());
 
@@ -335,15 +333,13 @@ public class LBWriter {
 	 */
 	private void createCountRow(final int theTotalCount,
 			final Workbook theCurrentBook, final int lastRowNum) {
-		// Create the total row
+		
 		Row currentRow = theCurrentBook.getSheetAt(TOP_SHEET_INDEX).createRow(lastRowNum + SUMMARY_BUFFER);
-	
 
 		currentRow.createCell(LANGUAGE_CONSTANT).setCellValue(LABEL_TOTAL);
 
 		currentRow.createCell(LANGUAGE_CONSTANT + 1).setCellValue(theTotalCount);
 		
-		//System.out.println("TOTAL COUNT FOR " + theCurrentBook.getSheetName(TOP_SHEET_INDEX) + " IS " + theTotalCount);
 	}	
 	
 
@@ -366,7 +362,6 @@ public class LBWriter {
 		while (iterator.hasNext()) {
 
 			final NativeLanguage language = iterator.next();
-			//System.out.println("Total count for " + theCurrentSchool + " is " + totalCount + " lanaguage is " + language.getLanguageLabel());
 			totalCount = createLanguageRow(language, rowCounter, totalCount,
 							theCurrentBook, theCurrentSchool);
 
