@@ -36,7 +36,9 @@ public class LBMain {
 	/** Static field to hold a reference to the Gap Constant. */
 	private static final int COMPONENT_GAP_WIDTH = 0;
 	
-	private static final int FRAME_SCALAR = 5;
+	private static final int FRAME_SCALAR = 3;
+	
+	private static final double WIDTH_SCALAR = 0.90;
 
 	/** Static field to hold a header constant. */
 	private static final int HEADER_CONSTANT = 5;
@@ -46,6 +48,8 @@ public class LBMain {
 
 	/** Private field to hold a reference to a space delimiter. */
 	private static final String SPACE_DELIMITER = " ";
+	
+	private static final String FRAME_TITLE = "Language Blaster Version 1.4";
 	
 	private static final String FILTER_TITLE = "Spreadsheet File Types";
 
@@ -93,8 +97,9 @@ public class LBMain {
 
 		myFrame.setVisible(true);
 		myFrame.setResizable(true);
+		myFrame.setTitle(FRAME_TITLE);
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		myFrame.setPreferredSize(new Dimension((int)TOOL_KIT.getScreenSize().getWidth(), (int)TOOL_KIT.getScreenSize().getHeight() / FRAME_SCALAR));
+		myFrame.setPreferredSize(new Dimension((int)(TOOL_KIT.getScreenSize().getWidth() * WIDTH_SCALAR), (int)TOOL_KIT.getScreenSize().getHeight() / FRAME_SCALAR));
 		myFrame.pack();
 		myFrame.setLocationRelativeTo(null);
 
