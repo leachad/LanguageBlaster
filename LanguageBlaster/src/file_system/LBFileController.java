@@ -13,7 +13,6 @@ import model.SLACount;
 import model.SchoolData;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Row;
 
 public class LBFileController {
 
@@ -127,8 +126,8 @@ public class LBFileController {
 	 * This will be the first call when the file is selected. When the User selects one of the 
 	 * top 'n' rows, the workbook will be read. Does not guarantee that the list will not be null.
 	 */
-	public List<Row> getPotentialSortingRows(final int theTopRows) {
-		List<Row> topRows = new ArrayList<>();
+	public List<List<String>> getPotentialSortingRows(final int theTopRows) {
+		List<List<String>> topRows = new ArrayList<>();
 		try {
 			topRows = myLBParser.readPotentialSortingRows(theTopRows, myFile);
 		} catch (InvalidFormatException | IOException e) {

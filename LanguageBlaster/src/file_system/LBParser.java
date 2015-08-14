@@ -18,6 +18,7 @@ import model.NativeLanguage;
 import model.Student;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -25,6 +26,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import resources.HeaderCase;
 import view.LBDate;
+import exceptions.BlasterError;
 
 /**
  * @author aleach
@@ -108,20 +110,52 @@ public class LBParser {
 	 * @throws InvalidFormatException
 	 * 
 	 */
-	public List<Row> readPotentialSortingRows(final int theTopRows,
+	public List<List<String>> readPotentialSortingRows(final int theTopRows,
 			final File theFile) throws InvalidFormatException, IOException {
 		final Sheet current = WorkbookFactory.create(theFile).getSheetAt(0);
-		final List<Row> topRows = new ArrayList<>(theTopRows);
+		final List<List<String>> topRows = new ArrayList<>(theTopRows);
 		int maxColumns = 0;
+
+		// Check Max Columns
 		for (int i = 0; i < theTopRows; i++) {
 			if (current.getRow(i).getPhysicalNumberOfCells() > maxColumns)
 				maxColumns = current.getRow(i).getPhysicalNumberOfCells();
-			topRows.add(current.getRow(i));
+			topRows.add(getRow(current.getRow(i)));
 		}
 
 		LocalStorage.setNumColumns(maxColumns);
+		
+		checkRows(topRows);
 		return topRows;
 
+	}
+	
+	private void checkRows(final List<List<String>> theTopRows) {
+		for (int i = 0; i < theTopRows.size(); i++) {
+			if (theTopRows.get(i).size() == 0)
+				fillEmptyRow(theTopRows.get(i));
+			
+		}
+	}
+	
+	private List<String> getRow(final Row theRow) {
+		Iterator<Cell> row = theRow.iterator();
+		List<String> newRow = new ArrayList<>();
+		while (row.hasNext()) {
+			newRow.add(row.next().getStringCellValue());
+		}
+		
+		return newRow;
+	}
+
+
+	/**
+	 * Private method used to fill empty rows with data.
+	 */
+	private void fillEmptyRow(final List<String> theRow) {
+		for (int i = 0; i < LocalStorage.getNumColumns(); i++) {
+			theRow.add(BlasterError.EMPTY_CELL.text);
+		}
 	}
 
 	/**

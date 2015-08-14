@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTable;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -23,7 +24,7 @@ import file_system.LocalStorage;
  * @author aleach
  *
  */
-public class HeaderRow extends JPanel {
+public class HeaderRow extends JTable {
 
 	/**
 	 * 

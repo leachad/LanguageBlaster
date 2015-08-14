@@ -11,18 +11,17 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import org.apache.poi.ss.usermodel.Row;
 
 import resources.FileResource;
 import resources.ViewResource;
@@ -30,15 +29,10 @@ import file_system.LBFileController;
 
 public class LBMain {
 
-	/** Static field to hold a referencw to a Tookmit.*/
+	/** Static field to hold a referencw to a Tookmit. */
 	private static final Toolkit TOOL_KIT = Toolkit.getDefaultToolkit();
 
-	/** Static field to hold a reference to the Gap Constant. */
-	private static final int COMPONENT_GAP_WIDTH = 0;
-	
 	private static final int FRAME_SCALAR = 3;
-	
-	private static final double WIDTH_SCALAR = 0.90;
 
 	/** Static field to hold a header constant. */
 	private static final int HEADER_CONSTANT = 5;
@@ -48,9 +42,9 @@ public class LBMain {
 
 	/** Private field to hold a reference to a space delimiter. */
 	private static final String SPACE_DELIMITER = " ";
-	
+
 	private static final String FRAME_TITLE = "Language Blaster Version 1.4";
-	
+
 	private static final String FILTER_TITLE = "Spreadsheet File Types";
 
 	/** Private field to hold a JFrame for showing all of the GUI elements. */
@@ -64,15 +58,15 @@ public class LBMain {
 
 	/** Field to hold a reference to the base panel. */
 	private JPanel myBasePanel;
-	
-	/** Field to hold a reference to the Execute Button.*/
+
+	/** Field to hold a reference to the Execute Button. */
 	private JButton myExecuteButton;
 
 	/**
 	 * Field to hold a list of rows used for aiding the user in selecting the
 	 * row to sort on.
 	 */
-	private List<Row> myTopRows;
+	private List<List<String>> myTopRows;
 
 	public LBMain() {
 
@@ -91,16 +85,17 @@ public class LBMain {
 		myFrame = new JFrame();
 
 		addToolbar();
-
 		addMenu();
 		addComponents();
 
-		myFrame.setVisible(true);
-		myFrame.setResizable(true);
 		myFrame.setTitle(FRAME_TITLE);
 		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		myFrame.setPreferredSize(new Dimension((int)(TOOL_KIT.getScreenSize().getWidth() * WIDTH_SCALAR), (int)TOOL_KIT.getScreenSize().getHeight() / FRAME_SCALAR));
+		myFrame.setPreferredSize(new Dimension((int) (TOOL_KIT.getScreenSize()
+				.getWidth() / FRAME_SCALAR), (int) TOOL_KIT.getScreenSize()
+				.getHeight() / FRAME_SCALAR));
+		myFrame.setResizable(false);
 		myFrame.pack();
+		myFrame.setVisible(true);
 		myFrame.setLocationRelativeTo(null);
 
 	}
@@ -115,9 +110,10 @@ public class LBMain {
 		myFrame.add(myToolBar, BorderLayout.SOUTH);
 
 	}
-	
+
 	/**
-	 * Private method to add a MenuBar to the GUI using a separately build class.
+	 * Private method to add a MenuBar to the GUI using a separately build
+	 * class.
 	 */
 	private void addMenu() {
 		LBMenu theMenuBar = new LBMenu();
@@ -159,6 +155,13 @@ public class LBMain {
 					myTopRows = myFileController
 							.getPotentialSortingRows(HEADER_CONSTANT);
 
+					for (int i = 0; i < myTopRows.size(); i++) {
+						for (int j = 0; j < myTopRows.get(i).size(); j++) {
+							System.out.print(myTopRows.get(i).get(j) + ", ");
+						}
+						System.out.println();
+					}
+
 					updateHeaderPanel();
 
 				}
@@ -175,7 +178,7 @@ public class LBMain {
 	 * appropriate row on which to sort the data.
 	 */
 	private void updateHeaderPanel() {
-		myBasePanel.add(getHeaderPanel());
+		myBasePanel.add(getHeaderPanel(), BorderLayout.SOUTH);
 		myBasePanel.repaint();
 		myBasePanel.revalidate();
 
@@ -192,15 +195,16 @@ public class LBMain {
 		final JPanel executePanel = new JPanel();
 		executePanel.setName(ViewResource.EXECUTION_PANEL.text);
 
-		myExecuteButton = new JButton(
-				ViewResource.RUN_PARSER_BUTTON.text);
+		myExecuteButton = new JButton(ViewResource.RUN_PARSER_BUTTON.text);
 		myExecuteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
 
 				myFileController.readWorkbook();
 				myFileController.executeBatchPublish();
-				myToolBar.updateToolBar(myFileController.getDataStack(), myFileController.getEmailList(), myFileController.getFileList());
+				myToolBar.updateToolBar(myFileController.getDataStack(),
+						myFileController.getEmailList(),
+						myFileController.getFileList());
 				myFileController.closeSummaryWorkBook();
 
 			}
@@ -252,34 +256,23 @@ public class LBMain {
 		final JPanel headerPanel = new JPanel();
 		headerPanel.setName(ViewResource.HEADER_PANEL.text);
 
-		GroupLayout groupLayout = new GroupLayout(headerPanel);
-		headerPanel.setLayout(groupLayout);
-		ParallelGroup pGroup = groupLayout.createParallelGroup();
-		groupLayout.setHorizontalGroup(pGroup);
-		SequentialGroup sGroup = groupLayout.createSequentialGroup();
-		groupLayout.setVerticalGroup(sGroup);
+		JTable table = new JTable(new HeaderTableModel(myTopRows));
+		table.getSelectionModel().addListSelectionListener(
+				new HeaderTableListener());
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setSize(scrollPane.getPreferredSize());
+		headerPanel.add(scrollPane);
 
-		ButtonGroup buttonGroup = new ButtonGroup();
-		for (int i = 0; i < myTopRows.size(); i++) {
-			HeaderRow current = new HeaderRow(i, myTopRows.get(i));
-			buttonGroup.add(current.getSelector());
-			pGroup.addComponent(current);
-			sGroup.addComponent(current, GroupLayout.PREFERRED_SIZE,
-					GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE);
-			current.getSelector().addItemListener(new RadioListener(i));
-			sGroup.addGap(COMPONENT_GAP_WIDTH);
-
-		}
-		
 		return headerPanel;
 	}
-	
+
 	/**
-	 * Private method to return a FileNameExtensionFilter consisting of 
-	 * common Spreadsheet File Types.
+	 * Private method to return a FileNameExtensionFilter consisting of common
+	 * Spreadsheet File Types.
 	 */
 	private FileNameExtensionFilter getExcelFilter() {
-		return new FileNameExtensionFilter(FILTER_TITLE, FileResource.XLS.text, FileResource.XLSX.text, FileResource.ODT.text);
+		return new FileNameExtensionFilter(FILTER_TITLE, FileResource.XLS.text,
+				FileResource.XLSX.text, FileResource.ODT.text);
 	}
 
 	/**
@@ -289,7 +282,6 @@ public class LBMain {
 
 		myBasePanel = new JPanel();
 		myBasePanel.setName(ViewResource.BASE_PANEL.text);
-		myBasePanel.setPreferredSize(myFrame.getSize());
 		myBasePanel.setBackground(Color.gray);
 
 		myBasePanel.add(getDatePicker());
@@ -301,20 +293,14 @@ public class LBMain {
 
 	}
 
-	private class RadioListener implements ItemListener {
-
-		private int myIndex;
-
-		private RadioListener(final int theIndex) {
-			myIndex = theIndex;
-		}
+	private class HeaderTableListener implements ListSelectionListener {
 
 		@Override
-		public void itemStateChanged(ItemEvent theEvent) {
-			if (theEvent.getStateChange() == ItemEvent.SELECTED) {
-				myFileController.setStartIndex(myIndex + 1);
-				myExecuteButton.setEnabled(true);
-			}
+		public void valueChanged(final ListSelectionEvent theEvent) {
+			myFileController.setStartIndex(theEvent.getFirstIndex());
+			System.out.println("Workbook will sort on row "
+					+ theEvent.getLastIndex());
+			myExecuteButton.setEnabled(true);
 
 		}
 
