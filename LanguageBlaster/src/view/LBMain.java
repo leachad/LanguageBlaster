@@ -15,10 +15,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -106,7 +106,7 @@ public class LBMain {
 	private void addToolbar() {
 
 		myToolBar = new OptionToolBar(myFrame, myFileController.getDataStack(),
-				myFileController.getFileList(), myFileController.getEmailList());
+				myFileController.getFileList(), myFileController.getEmailMap());
 		myFrame.add(myToolBar, BorderLayout.SOUTH);
 
 	}
@@ -155,13 +155,6 @@ public class LBMain {
 					myTopRows = myFileController
 							.getPotentialSortingRows(HEADER_CONSTANT);
 
-					for (int i = 0; i < myTopRows.size(); i++) {
-						for (int j = 0; j < myTopRows.get(i).size(); j++) {
-							System.out.print(myTopRows.get(i).get(j) + ", ");
-						}
-						System.out.println();
-					}
-
 					updateHeaderPanel();
 
 				}
@@ -203,7 +196,7 @@ public class LBMain {
 				myFileController.readWorkbook();
 				myFileController.executeBatchPublish();
 				myToolBar.updateToolBar(myFileController.getDataStack(),
-						myFileController.getEmailList(),
+						myFileController.getEmailMap(),
 						myFileController.getFileList());
 				myFileController.closeSummaryWorkBook();
 
@@ -297,10 +290,14 @@ public class LBMain {
 
 		@Override
 		public void valueChanged(final ListSelectionEvent theEvent) {
-			myFileController.setStartIndex(theEvent.getFirstIndex());
-			System.out.println("Workbook will sort on row "
-					+ theEvent.getLastIndex());
-			myExecuteButton.setEnabled(true);
+			ListSelectionModel selectionModel = (ListSelectionModel) theEvent.getSource();
+			
+			if (!selectionModel.isSelectionEmpty() && (selectionModel.getMinSelectionIndex() - selectionModel.getMaxSelectionIndex() == 0)) {
+				myFileController.setStartIndex((selectionModel.getMinSelectionIndex() + 1));
+				myExecuteButton.setEnabled(true);
+			}
+			
+			
 
 		}
 

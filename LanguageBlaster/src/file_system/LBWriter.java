@@ -31,10 +31,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 
-import exceptions.BlasterError;
 import resources.FileResource;
 import resources.ViewResource;
 import view.LBDate;
+import exceptions.BlasterError;
 
 /**
  * @author aleach
@@ -73,7 +73,7 @@ public class LBWriter {
 	private List<File> myFileList;
 
 	/** Private field to hold an email list. */
-	private List<Email> myEmailList;
+	private Map<String, Email> myEmailMap;
 
 	/** Private field to hold an SLACount object for initiating counting. */
 	private SLACount mySLACount;
@@ -84,7 +84,7 @@ public class LBWriter {
 	public LBWriter() {
 		myDataStack = new ArrayDeque<>();
 		myFileList = new ArrayList<>();
-		myEmailList = LocalStorage.getEmailList();;
+		myEmailMap = LocalStorage.getEmailMap();;
 		mySLACount = null;
 	}
 	
@@ -92,8 +92,8 @@ public class LBWriter {
 		return myFileList;
 	}
 	
-	public List<Email> getEmailList() {
-		return myEmailList;
+	public Map<String, Email> getEmailList() {
+		return myEmailMap;
 	}
 	
 	public ArrayDeque<SchoolData> getDataStack() {
@@ -266,31 +266,12 @@ public class LBWriter {
 		 * Language set is fully constructed and closeStream() is called by the
 		 * changeSchool method.
 		 */
-
-		boolean isESL = false;
-		int index = 0;
-
-		for (int i = 0; i < myEmailList.size(); i++) {
-
-			if (myEmailList
-					.get(i)
-					.getSchool()
-					.equalsIgnoreCase(
-							theCurrentSchool.substring(
-									theCurrentSchool.indexOf(FileResource.DASH.text) + 1,
-									theCurrentSchool.length()).trim())) {
-
-				index = i;
-				i = myEmailList.size();
-				isESL = true;
-			}
-		}
-
-		if (isESL) {
-
-			final String[] emails = myEmailList.get(index).getEmails();
+		
+		if (myEmailMap.get(theCurrentSchool) != null) {
+			final String[] emails = myEmailMap.get(theCurrentSchool).getEmails();
 			mySchoolData = new SchoolData(theLanguageSet, theCurrentSchool,
 					bytes, emails, myCurrentFilePath, LBDate.getCurrentMonth());
+			System.out.println("% MATCH! --> " + mySchoolData.getEmailName() + ", \n     " + mySchoolData.getSchoolName());
 			myDataStack.push(mySchoolData);
 
 		}

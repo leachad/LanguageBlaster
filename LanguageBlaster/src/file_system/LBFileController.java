@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -106,25 +107,26 @@ public class LBFileController {
 	public ArrayDeque<SchoolData> getDataStack() {
 		return myLBWriter.getDataStack();
 	}
-	
+
 	/**
 	 * Public method to return the List of files for updating purposes.
 	 */
 	public List<File> getFileList() {
 		return myLBWriter.getFileList();
 	}
-	
+
 	/**
 	 * Public method to return the List of Email's for updating purposes.
 	 */
-	public List<Email> getEmailList() {
-		return LocalStorage.getEmailList();
+	public Map<String, Email> getEmailMap() {
+		return LocalStorage.getEmailMap();
 	}
-	
+
 	/**
-	 * Public method used to read and return the top 'n' rows as selected by the User.
-	 * This will be the first call when the file is selected. When the User selects one of the 
-	 * top 'n' rows, the workbook will be read. Does not guarantee that the list will not be null.
+	 * Public method used to read and return the top 'n' rows as selected by the
+	 * User. This will be the first call when the file is selected. When the
+	 * User selects one of the top 'n' rows, the workbook will be read. Does not
+	 * guarantee that the list will not be null.
 	 */
 	public List<List<String>> getPotentialSortingRows(final int theTopRows) {
 		List<List<String>> topRows = new ArrayList<>();
@@ -132,25 +134,25 @@ public class LBFileController {
 			topRows = myLBParser.readPotentialSortingRows(theTopRows, myFile);
 		} catch (InvalidFormatException | IOException e) {
 			JOptionPane.showMessageDialog(null, ERROR_MESSAGE);
-		} 
-		
+		}
+
 		return topRows;
 	}
 
 	/**
-	 * Public method to parse the selected worksheet. TODO Make sure this method
-	 * chaining is thread safe
+	 * Public method to parse the selected worksheet.
 	 * 
 	 * @param theFile
 	 *            is the current File object of Master Book.
 	 */
 	public void executeBatchPublish() {
 		if (mySLACount == null)
-			myLBWriter.writeCountData(myLBParser.getCellMap(), null, myLBParser.getLanguageMap());
+			myLBWriter.writeCountData(myLBParser.getCellMap(), null,
+					myLBParser.getLanguageMap());
 		else
-			myLBWriter.writeCountData(myLBParser.getCellMap(), mySLACount, myLBParser.getLanguageMap());
+			myLBWriter.writeCountData(myLBParser.getCellMap(), mySLACount,
+					myLBParser.getLanguageMap());
 	}
-	
 
 	/**
 	 * Public method to read the workbook into a buffer using the method of the

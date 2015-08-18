@@ -197,7 +197,6 @@ public class LBParser {
 		createNewSchoolLanguageMap(currentBuilding);
 
 		for (int i = 0; i < theRowBuffer.size(); i++) {
-			System.out.println(theRowBuffer.get(i).toString());
 			if (currentBuilding != theRowBuffer.get(i).getMyBuilding()) {
 				currentBuilding = theRowBuffer.get(i).getMyBuilding();
 				createNewSchoolHeaders(currentBuilding);
@@ -311,8 +310,6 @@ public class LBParser {
 		while (iterator.hasNext()) {
 
 			final NativeLanguage language = iterator.next();
-			System.out.println("Evaluating " + language.getLanguageLabel()
-					+ " against " + theCurrentLanguage);
 			if (language.getLanguageLabel().equals(theCurrentLanguage)) {
 
 				language.increment();

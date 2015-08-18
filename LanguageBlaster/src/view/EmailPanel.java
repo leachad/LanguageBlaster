@@ -11,7 +11,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -49,7 +50,7 @@ public class EmailPanel extends JPanel {
 	private JScrollPane myScrollPane;
 
 	/** Private field to hold an array of Email address objects. */
-	private List<Email> myEmailList;
+	private Map<String, Email> myEmailMap;
 
 	public EmailPanel() {
 
@@ -64,9 +65,9 @@ public class EmailPanel extends JPanel {
 	 */
 	private void start() {
 
-		myEmailList = LocalStorage.getEmailList();
+		myEmailMap = LocalStorage.getEmailMap();
 
-		myBasePanel = new JPanel(new GridLayout(myEmailList.size(), 2));
+		myBasePanel = new JPanel(new GridLayout(myEmailMap.size(), 2));
 		myBasePanel.setSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
 		addSaveButton();
@@ -116,15 +117,17 @@ public class EmailPanel extends JPanel {
 
 	}
 
-
 	/**
 	 * Private method to display the emails with their schools on the panel.
 	 * TODO: Issue is happening in parseline
 	 */
 	private void displayEmails() {
 
-		for (int i = 0; i < myEmailList.size(); i++) {
-			final Email email = myEmailList.get(i);
+		Iterator<String> keySet = myEmailMap.keySet().iterator();
+
+		while (keySet.hasNext()) {
+			final Email email = myEmailMap.get(keySet.next());
+
 			final JTextField showSchool = new JTextField(email.getSchool());
 			showSchool.setEditable(false);
 			showSchool.setPreferredSize(new Dimension(DEFAULT_WIDTH / 2,
@@ -161,14 +164,8 @@ public class EmailPanel extends JPanel {
 	 */
 
 	private void replaceEmail(Email newMail) {
-
-		for (int i = 0; i < myEmailList.size(); i++) {
-			if (myEmailList.get(i).getSchool()
-					.equalsIgnoreCase(newMail.getSchool())) {
-				myEmailList.remove(i);
-				myEmailList.add(newMail);
-			}
-		}
+		if (myEmailMap.get(newMail.getSchool()) != null)
+			myEmailMap.put(newMail.getSchool(), newMail);
 	}
 
 	/**
@@ -211,19 +208,19 @@ public class EmailPanel extends JPanel {
 	 */
 	private void writeEmailsToFile() {
 		FileWriter out = null;
-		
+
 		try {
 			out = new FileWriter(new File(EMAIL_STORAGE));
-			for (int i = 0; i < myEmailList.size(); i++) {
-				out.write(myEmailList.get(i).getSchool().concat(DELIMITER)
-						.concat(myEmailList.get(i).toString())
+			for (int i = 0; i < myEmailMap.size(); i++) {
+				out.write(myEmailMap.get(i).getSchool().concat(DELIMITER)
+						.concat(myEmailMap.get(i).toString())
 						+ CARRIAGE_RETURN);
 			}
 			out.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	/**
@@ -232,9 +229,9 @@ public class EmailPanel extends JPanel {
 	 * @return myEmailList is the map of all email address with schoolName as
 	 *         the key.
 	 */
-	public List<Email> getEmails() {
+	public Map<String, Email> getEmails() {
 
-		return myEmailList;
+		return myEmailMap;
 	}
 
 }

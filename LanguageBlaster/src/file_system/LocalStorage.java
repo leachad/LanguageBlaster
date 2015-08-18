@@ -7,8 +7,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -38,7 +38,7 @@ public class LocalStorage {
 
 	public static File myOutputFolder;
 
-	private static List<Email> myEmailList;
+	private static Map<String, Email> myEmailMap;
 	
 	private static int myNumColumns;
 
@@ -80,15 +80,16 @@ public class LocalStorage {
 	/**
 	 * Method used to return the list of emails to the calling code.
 	 */
-	public static List<Email> getEmailList() {
-		if (myEmailList != null)
-			return myEmailList;
+	public static Map<String, Email> getEmailMap() {
+		if (myEmailMap != null)
+			return myEmailMap;
 		else
 			return readEmailFile();
 	}
 
-	private static List<Email> readEmailFile() {
-		List<Email> emailList = new ArrayList<>();
+	private static Map<String, Email> readEmailFile() {
+		myEmailMap = new HashMap<>();
+		
 		try {
 			final BufferedReader reader = new BufferedReader(new FileReader(
 					new File(EMAIL_PATH)));
@@ -96,16 +97,16 @@ public class LocalStorage {
 			while (reader.ready()) {
 
 				final String line = reader.readLine();
-				emailList.add(parseLine(line, false));
+				Email current = parseLine(line, false);
+				myEmailMap.put(current.getSchool(), current);
 
 			}
-			myEmailList = emailList;
 			reader.close();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, EMAIL_ERROR + e.getMessage());
 		}
 
-		return emailList;
+		return myEmailMap;
 
 	}
 

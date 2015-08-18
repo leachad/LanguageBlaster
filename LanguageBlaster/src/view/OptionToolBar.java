@@ -12,19 +12,21 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayDeque;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
+import model.Email;
+import model.SchoolData;
 import resources.FileResource;
 import resources.ViewResource;
 import exceptions.BlasterError;
 import file_system.LocalStorage;
-import model.Email;
-import model.SchoolData;
 
 /**
  * Implements the toolbar for the user.
@@ -71,7 +73,7 @@ public class OptionToolBar extends JToolBar {
 	private JFrame myFrame;
 
 	/** Private field to hold a current list of emails. */
-	private List<Email> myEmailList;
+	private Map<String, Email> myEmailMap;
 
 	/** Private field to hold an email sla to pam button. */
 	private JButton mySlaButton;
@@ -85,8 +87,6 @@ public class OptionToolBar extends JToolBar {
 	/** Private field used to hold the result button. */
 	private JButton myResultButton;
 
-	/** Private field to hold a reference to the Current Month. */
-	private String myCurrentMonth;
 
 	/**
 	 * Serial ID.
@@ -94,13 +94,13 @@ public class OptionToolBar extends JToolBar {
 	private static final long serialVersionUID = 1L;
 
 	public OptionToolBar(final JFrame theFrame,
-			final ArrayDeque<SchoolData> theDataStack, final List<File> list,
-			final List<Email> list2) {
+			final ArrayDeque<SchoolData> theDataStack, final List<File> theFileList,
+			final Map<String, Email> theEmailMap) {
 
 		myFrame = theFrame;
 		myDataStack = theDataStack;
-		myFileList = list;
-		myEmailList = list2;
+		myFileList = theFileList;
+		myEmailMap = theEmailMap;
 
 		addComponents();
 	}
@@ -113,12 +113,11 @@ public class OptionToolBar extends JToolBar {
 	 *            is the fresh stack of data being passed in.
 	 */
 	public void updateToolBar(final ArrayDeque<SchoolData> theDataStack,
-			final List<Email> theEmailList, final List<File> theFileList) {
+			final Map<String, Email> theEmailMap, final List<File> theFileList) {
 
 		myDataStack = theDataStack;
-		myEmailList = theEmailList;
+		myEmailMap = theEmailMap;
 		myFileList = theFileList;
-		myCurrentMonth = theDataStack.peek().getCurrentMonth();
 		myEmailButton.setEnabled(true);
 		mySlaButton.setEnabled(true);
 		myPrintButton.setEnabled(true);
@@ -179,12 +178,9 @@ public class OptionToolBar extends JToolBar {
 		myEmailButton.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent theEvent) {
 
-				while (!myDataStack.isEmpty()) {
-
-					SchoolData sd = myDataStack.pop();
-
-					initiateDesktopClient(sd);
-
+				Iterator<SchoolData> iterator = myDataStack.iterator();
+				while (iterator.hasNext()) {
+					initiateDesktopClient(iterator.next());
 				}
 			}
 		});
@@ -261,7 +257,7 @@ public class OptionToolBar extends JToolBar {
 		final JFrame frame = new JFrame();
 		final EmailPanel eP = new EmailPanel();
 
-		myEmailList = eP.getEmails();
+		myEmailMap = eP.getEmails();
 		// opens up a new email window.
 		editEmails.addActionListener(new ActionListener() {
 
@@ -309,7 +305,7 @@ public class OptionToolBar extends JToolBar {
 		if (Desktop.isDesktopSupported()
 				&& (desktop = Desktop.getDesktop())
 						.isSupported(Desktop.Action.MAIL)) {
-
+			System.out.println("Preparing Email Client for ---> " + theSchoolData.getEmailName() + " @ " + theSchoolData.getSchoolName());
 			try {
 
 				URI mailto;
@@ -341,10 +337,10 @@ public class OptionToolBar extends JToolBar {
 	private String buildMailToURI(final String theEmailAddress) {
 		return FileResource.MAIL_TO.text + theEmailAddress + FileResource.START_ARGS.text 
 				+ FileResource.SUBJECT.text + FileResource.ASSIGN_ARGS.text
-				+ myCurrentMonth + FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT 
+				+ LBDate.getCurrentMonth() + FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT 
 				+ FileResource.APPEND_ARGS.text + FileResource.BODY.text
 				+ FileResource.ASSIGN_ARGS.text + EMAIL_BODY
-				+ myCurrentMonth + EMAIL_SUBJECT;
+				+ LBDate.getCurrentMonth() + EMAIL_SUBJECT;
 	}
 
 	private String buildMailToURI(final String theEmailAddress,
@@ -362,8 +358,8 @@ public class OptionToolBar extends JToolBar {
 	 * 
 	 * @return myEmailMap is the list of emails.
 	 */
-	public List<Email> getEmails() {
+	public Map<String, Email> getEmails() {
 
-		return myEmailList;
+		return myEmailMap;
 	}
 }
