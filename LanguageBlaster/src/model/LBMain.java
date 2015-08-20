@@ -1,4 +1,4 @@
-package view;
+package model;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,6 +25,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import resources.FileResource;
 import resources.ViewResource;
+import view.HeaderTableModel;
+import view.LBDate;
+import view.LBMenu;
+import view.OptionToolBar;
 import file_system.LBFileController;
 
 public class LBMain {

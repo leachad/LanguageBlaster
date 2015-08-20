@@ -1,6 +1,5 @@
 package model;
 
-import view.LBMain;
 
 public class Begin {
 	
