@@ -55,7 +55,7 @@ public class LBFileController {
 	 */
 	public void setMonthlyMasterFilePath(final File theMasterFile) {
 		myFile = theMasterFile;
-		myParentFolderPath = LocalStorage.createDirectory();
+		myParentFolderPath = LocalStorage.getWorkingDirectory();
 	}
 
 	/**
@@ -86,8 +86,9 @@ public class LBFileController {
 	 *            is the date used to create a Unique Folder ID.
 	 */
 	public void createNewOverViewWorkbook(final String theDate) {
+		//TODO get the current directory instead of creating a new directory
 		mySLACount = new SLACount(LocalStorage.getSLABlankPath(),
-				LocalStorage.createDirectory(), theDate);
+				LocalStorage.getWorkingDirectory(), theDate);
 
 	}
 

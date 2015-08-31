@@ -59,7 +59,7 @@ public class LocalStorage {
 	 * Private method to create a directory used to store all newly created
 	 * excel books.
 	 */
-	public static String createDirectory() {
+	private static String createDirectory() {
 
 		myOutputFolder = new File(STORAGE_PATH.concat(File.separator)
 				.concat(chooseParentFolder()).concat(File.separator)
@@ -75,6 +75,13 @@ public class LocalStorage {
 	
 	public static String getOutputDirectory() {
 		return myOutputFolder.toString();
+	}
+	
+	public static String getWorkingDirectory() {
+		if (myOutputFolder == null)
+			return createDirectory();
+		else
+			return myOutputFolder.toString();
 	}
 
 	/**
