@@ -27,19 +27,20 @@ public class LocalStorage {
 	/** static field to hold a reference to the store path. */
 	private static final String STORAGE_PATH = "G:\\groups\\Elem Education\\ESL";
 
+	/** static field to hold a reference to the email path. */
 	private static final String EMAIL_PATH = System.getProperty("user.dir")
 			.concat("\\src\\file_system\\emailList.txt");
 	
+	/** static fields to hold references to the file delimiters.*/
 	private static final String CARRIAGE_RETURN = "/r/n";
 	private static final String DELIMITER = ",";
-
 	private static final String DELIMITER_ONE = ",";
-
 	private static final String DELIMITER_TWO = ";";
 
 	/** static field to hold the SLA Blank. */
 	private static final String SLA_BLANK_PATH = "G:\\groups\\Elem Education\\ESL\\SLA Blank [DO NOT MOVE OR DELETE]\\SLA_Blank.xls";
 
+	/** static File used as a Directory to hold the outputfolder.*/
 	public static File myOutputFolder;
 
 	private static Map<String, Email> myEmailMap;
