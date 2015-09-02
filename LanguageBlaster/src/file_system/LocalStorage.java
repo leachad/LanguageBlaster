@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import exceptions.BlasterError;
 import model.Email;
 import view.LBDate;
 
@@ -31,8 +32,6 @@ public class LocalStorage {
 	
 	private static final String CARRIAGE_RETURN = "/r/n";
 	private static final String DELIMITER = ",";
-
-	private static final String EMAIL_ERROR = "Sorry, couldn't read the flat file of emails...\n";
 
 	private static final String DELIMITER_ONE = ",";
 
@@ -140,7 +139,7 @@ public class LocalStorage {
 			}
 			reader.close();
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, EMAIL_ERROR + e.getMessage());
+			JOptionPane.showMessageDialog(null, BlasterError.EMAIL_FILE_ERROR.text + e.getMessage());
 		}
 
 		return myEmailMap;

@@ -50,12 +50,6 @@ public class OptionToolBar extends JToolBar {
 
 	private static final String EMAIL_BODY_LIST = "%20class%20list%20for%20";
 
-	/** Private field to hold an Error Message. */
-	private static final String EMAIL_ERROR = "Sorry, there was a problem executing your request";
-
-	/** Private field to hold a reference to a File Error. */
-	private static final String FILE_ERROR = "Sorry, couldn't find that file...";
-
 	private static final String PRINTER_ALERT = "Remember to set your default printer to \n "
 			+ "the office Xerox machine.";
 
@@ -207,7 +201,7 @@ public class OptionToolBar extends JToolBar {
 
 				} catch (final IOException | URISyntaxException e) {
 					JOptionPane.showMessageDialog(null,
-							EMAIL_ERROR + e.getMessage());
+							BlasterError.SEND_EMAIL_ERROR + e.getMessage());
 				}
 			}
 		});
@@ -290,7 +284,7 @@ public class OptionToolBar extends JToolBar {
 			} catch (final IOException e) {
 
 				JOptionPane
-						.showMessageDialog(null, FILE_ERROR + e.getMessage());
+						.showMessageDialog(null, BlasterError.PRINT_FILE_ERROR.text + e.getMessage());
 
 			}
 		}
@@ -327,11 +321,11 @@ public class OptionToolBar extends JToolBar {
 
 			} catch (URISyntaxException | IOException e) {
 				JOptionPane.showMessageDialog(null,
-						EMAIL_ERROR + e.getMessage());
+						BlasterError.SEND_EMAIL_ERROR.text + e.getMessage());
 			}
 
 		} else {
-			throw new RuntimeException(EMAIL_ERROR);
+			throw new RuntimeException(BlasterError.SEND_EMAIL_ERROR.text);
 		}
 	}
 

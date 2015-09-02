@@ -161,7 +161,7 @@ public class SLACount {
 			myOutput = new FileOutputStream(new File(outFilePath));
 
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, BlasterError.READ_ERROR.text);
+			JOptionPane.showMessageDialog(null, BlasterError.READ_BOOK_ERROR.text);
 		}
 
 	}
@@ -375,7 +375,7 @@ public class SLACount {
 			myOutput.close();
 
 		} catch (final IOException e) {
-			JOptionPane.showMessageDialog(null, BlasterError.READ_ERROR.text);
+			JOptionPane.showMessageDialog(null, BlasterError.READ_BOOK_ERROR.text);
 
 		} 
 	}

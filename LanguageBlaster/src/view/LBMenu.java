@@ -15,37 +15,32 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import exceptions.BlasterError;
 import resources.FileResource;
 
 /**
- * @author aleach
+ * @author leachad
+ * @version 1.5
+ * 
+ * Custom implementation of a JMenuBar for the LanguageBlaster 
+ * 
  *
  */
 public class LBMenu extends JMenuBar {
-	
-	private static final String FILE_MENU = "File";
-	
-	/** Private field to hold an Error Message. */
-	private static final String EMAIL_ERROR = "Sorry, there was a problem executing your request";
-	
-	private static final String EDIT_MENU = "Edit";
-	
-	private static final String HELP_MENU = "Help";
-	
-	private static final String HELP_PROMPT = "Email Andy...";
-	
-	private static final String HELP_EMAIL = "type3dude@gmail.com";
-	
-	private static final String EMAIL_SUBJECT = "Help with Language Blaster";
-	
-	//private static final String ABOUT_LB = "About Language Blaster";
-	
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8164135578910934966L;
-
+	
+	/** Private Fields to hold references to the separate Menu Labels used for traversing the Menu Structure.*/
+	private static final String FILE_MENU = "File";
+	private static final String EDIT_MENU = "Edit";
+	private static final String HELP_MENU = "Help";
+	private static final String HELP_PROMPT = "Email Andy...";
+	private static final String HELP_EMAIL = "type3dude@gmail.com";
+	private static final String EMAIL_SUBJECT = "Help%20with%20Language%20Blaster";
+	
 	public LBMenu() {
 		super();
 		createMenuComponents();
@@ -109,11 +104,11 @@ public class LBMenu extends JMenuBar {
 
 			} catch (URISyntaxException | IOException e) {
 				JOptionPane.showMessageDialog(null,
-						EMAIL_ERROR + e.getMessage());
+						BlasterError.SEND_EMAIL_ERROR.text + e.getMessage());
 			}
 
 		} else {
-			throw new RuntimeException(EMAIL_ERROR);
+			throw new RuntimeException(BlasterError.SEND_EMAIL_ERROR.text);
 		}
 	}
 	

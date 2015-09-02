@@ -15,13 +15,12 @@ import model.SchoolData;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
+import exceptions.BlasterError;
+
 public class LBFileController {
 
 	/** Static field to hold a reference to the Default Start Index. */
 	private static final int DEFAULT_START_INDEX = 3;
-
-	/** Private static final String used to hold an error message. */
-	private static final String ERROR_MESSAGE = "Sorry, unable to parse that file.";
 
 	/** Private field to hold a reference to the LBParser object. */
 	private LBParser myLBParser;
@@ -86,7 +85,6 @@ public class LBFileController {
 	 *            is the date used to create a Unique Folder ID.
 	 */
 	public void createNewOverViewWorkbook(final String theDate) {
-		//TODO get the current directory instead of creating a new directory
 		mySLACount = new SLACount(LocalStorage.getSLABlankPath(),
 				LocalStorage.getWorkingDirectory(), theDate);
 
@@ -134,7 +132,7 @@ public class LBFileController {
 		try {
 			topRows = myLBParser.readPotentialSortingRows(theTopRows, myFile);
 		} catch (InvalidFormatException | IOException e) {
-			JOptionPane.showMessageDialog(null, ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, BlasterError.PARSE_FILE_ERROR.text);
 		}
 
 		return topRows;
@@ -163,7 +161,7 @@ public class LBFileController {
 		try {
 			myLBParser.readWorkBookIntoBuffer(myFile, mySelectedStartIndex);
 		} catch (InvalidFormatException | IOException e) {
-			JOptionPane.showMessageDialog(null, ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, BlasterError.PARSE_FILE_ERROR.text);
 		}
 	}
 
