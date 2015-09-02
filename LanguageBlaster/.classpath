@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="C:/Users/aleach/Desktop/Open_Source/poi-3.10-FINAL/poi-ooxml-schemas-3.10-FINAL-20140208.jar"/>
 	<classpathentry kind="lib" path="C:/Users/aleach/Desktop/Open_Source/poi-3.10-FINAL/poi-scratchpad-3.10-FINAL-20140208.jar"/>
 	<classpathentry kind="lib" path="C:/Users/aleach/Desktop/Open_Source/selenium/selenium-server-standalone-2.44.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/aleach/Desktop/Open_Source/JMAPI.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

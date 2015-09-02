@@ -36,18 +36,18 @@ import file_system.LocalStorage;
  *
  */
 public class OptionToolBar extends JToolBar {
-	
+
 	private static final double FRAME_SCALAR = 1.5;
 
 	/** Private field to hold the email Address of the Office Coordinator. */
 	private static final String OFFICE_ADMIN_ADDRESS = "phulst@tacoma.k12.wa.us";
-	
+
 	private static final String EMAIL_SUBJECT = "SLA%20Count";
-	
+
 	private static final String EMAIL_BODY = "Attached%20is%20your%20current%20";
-	
+
 	private static final String EMAIL_BODY_TEACHER = "Attached%20is%20your%20current%20";
-	
+
 	private static final String EMAIL_BODY_LIST = "%20class%20list%20for%20";
 
 	/** Private field to hold an Error Message. */
@@ -56,7 +56,6 @@ public class OptionToolBar extends JToolBar {
 	/** Private field to hold a reference to a File Error. */
 	private static final String FILE_ERROR = "Sorry, couldn't find that file...";
 
-	/** Private field to hold a Warning Message. */
 	private static final String PRINTER_ALERT = "Remember to set your default printer to \n "
 			+ "the office Xerox machine.";
 
@@ -87,15 +86,14 @@ public class OptionToolBar extends JToolBar {
 	/** Private field used to hold the result button. */
 	private JButton myResultButton;
 
-
 	/**
 	 * Serial ID.
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public OptionToolBar(final JFrame theFrame,
-			final ArrayDeque<SchoolData> theDataStack, final List<File> theFileList,
-			final Map<String, Email> theEmailMap) {
+			final ArrayDeque<SchoolData> theDataStack,
+			final List<File> theFileList, final Map<String, Email> theEmailMap) {
 
 		myFrame = theFrame;
 		myDataStack = theDataStack;
@@ -251,11 +249,12 @@ public class OptionToolBar extends JToolBar {
 	 * @return the button used to bring up the edit email frame
 	 */
 	private JButton getEditEmailButton() {
-		final JButton editEmails = new JButton(ViewResource.EDIT_EMAILS_BUTTON.text);
+		final JButton editEmails = new JButton(
+				ViewResource.EDIT_EMAILS_BUTTON.text);
 		editEmails.setSize(new Dimension(editEmails.getPreferredSize()));
 
 		final JFrame frame = new JFrame();
-		final EmailPanel eP = new EmailPanel();
+		final EmailPanel eP = new EmailPanel(myFrame);
 
 		myEmailMap = eP.getEmails();
 		// opens up a new email window.
@@ -264,7 +263,8 @@ public class OptionToolBar extends JToolBar {
 			public void actionPerformed(final ActionEvent theEvent) {
 
 				frame.add(eP);
-				frame.setSize(new Dimension((int) (myFrame.getWidth() * FRAME_SCALAR),
+				frame.setSize(new Dimension(
+						(int) (myFrame.getWidth() * FRAME_SCALAR),
 						(int) (myFrame.getHeight() * FRAME_SCALAR)));
 				frame.setVisible(true);
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -305,7 +305,9 @@ public class OptionToolBar extends JToolBar {
 		if (Desktop.isDesktopSupported()
 				&& (desktop = Desktop.getDesktop())
 						.isSupported(Desktop.Action.MAIL)) {
-			System.out.println("Preparing Email Client for ---> " + theSchoolData.getEmailName() + " @ " + theSchoolData.getSchoolName());
+			System.out.println("Preparing Email Client for ---> "
+					+ theSchoolData.getEmailName() + " @ "
+					+ theSchoolData.getSchoolName());
 			try {
 
 				URI mailto;
@@ -313,10 +315,12 @@ public class OptionToolBar extends JToolBar {
 				String[] teacherEmails = theSchoolData.getEmailAddresses();
 
 				for (int i = 0; i < theSchoolData.getEmailAddresses().length; i++) {
-					addresses.append(teacherEmails[i].trim()).append(FileResource.SEMI_COLON.text)
-							.append(FileResource.ENCODED_SPACE.text).trimToSize();
+					addresses.append(teacherEmails[i].trim())
+							.append(FileResource.SEMI_COLON.text)
+							.append(FileResource.ENCODED_SPACE.text)
+							.trimToSize();
 				}
-				
+
 				mailto = new URI(buildMailToURI(addresses.toString().trim(),
 						theSchoolData));
 				desktop.mail(mailto);
@@ -335,22 +339,26 @@ public class OptionToolBar extends JToolBar {
 	 * Method used to construct the MailTo URI.
 	 */
 	private String buildMailToURI(final String theEmailAddress) {
-		return FileResource.MAIL_TO.text + theEmailAddress + FileResource.START_ARGS.text 
-				+ FileResource.SUBJECT.text + FileResource.ASSIGN_ARGS.text
-				+ LBDate.getCurrentMonth() + FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT 
+		return FileResource.MAIL_TO.text + theEmailAddress
+				+ FileResource.START_ARGS.text + FileResource.SUBJECT.text
+				+ FileResource.ASSIGN_ARGS.text + LBDate.getCurrentMonth()
+				+ FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT
 				+ FileResource.APPEND_ARGS.text + FileResource.BODY.text
 				+ FileResource.ASSIGN_ARGS.text + EMAIL_BODY
 				+ LBDate.getCurrentMonth() + EMAIL_SUBJECT;
 	}
 
 	private String buildMailToURI(final String theEmailAddress,
-			final SchoolData theSchoolData) {	
-		return FileResource.MAIL_TO.text + theEmailAddress + FileResource.START_ARGS.text 
-		+ FileResource.SUBJECT.text + FileResource.ASSIGN_ARGS.text
-		+ theSchoolData.getCurrentMonth() + FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT 
-		+ FileResource.APPEND_ARGS.text + FileResource.BODY.text
-		+ FileResource.ASSIGN_ARGS.text + EMAIL_BODY_TEACHER
-		+ theSchoolData.getCurrentMonth() + EMAIL_BODY_LIST + theSchoolData.getEmailName();
+			final SchoolData theSchoolData) {
+		return FileResource.MAIL_TO.text + theEmailAddress
+				+ FileResource.START_ARGS.text + FileResource.SUBJECT.text
+				+ FileResource.ASSIGN_ARGS.text
+				+ theSchoolData.getCurrentMonth()
+				+ FileResource.ENCODED_SPACE.text + EMAIL_SUBJECT
+				+ FileResource.APPEND_ARGS.text + FileResource.BODY.text
+				+ FileResource.ASSIGN_ARGS.text + EMAIL_BODY_TEACHER
+				+ theSchoolData.getCurrentMonth() + EMAIL_BODY_LIST
+				+ theSchoolData.getEmailName();
 	}
 
 	/**

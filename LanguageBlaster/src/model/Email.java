@@ -1,7 +1,8 @@
 package model;
 
+
 public class Email {
-	
+
 	/**Private field to hold the String*/
 	private String[] myEmailAddresses;
 	

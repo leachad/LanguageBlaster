@@ -8,13 +8,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,9 +28,6 @@ import file_system.LocalStorage;
 public class EmailPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private static final String CARRIAGE_RETURN = "/r/n";
-	private static final String DELIMITER = ",";
-	private static final String EMAIL_STORAGE = "src/view/emailList.txt";
 
 	/** Private field to hold a default dimension. */
 	private static final int DEFAULT_WIDTH = 600;
@@ -51,9 +46,13 @@ public class EmailPanel extends JPanel {
 
 	/** Private field to hold an array of Email address objects. */
 	private Map<String, Email> myEmailMap;
+	
+	/** Private field to hold a reference to the base frame.*/
+	private JFrame myBaseFrame;
 
-	public EmailPanel() {
+	public EmailPanel(final JFrame theBaseFrame) {
 
+		myBaseFrame = theBaseFrame;
 		start();
 		setSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 	}
@@ -96,6 +95,7 @@ public class EmailPanel extends JPanel {
 			public void actionPerformed(final ActionEvent theEvent) {
 
 				writeEmailsToFile();
+				myBaseFrame.dispose();
 
 			}
 		});
@@ -207,20 +207,8 @@ public class EmailPanel extends JPanel {
 	 * program initially reads from.
 	 */
 	private void writeEmailsToFile() {
-		FileWriter out = null;
+		LocalStorage.saveEmailState(myEmailMap);
 
-		try {
-			out = new FileWriter(new File(EMAIL_STORAGE));
-			for (int i = 0; i < myEmailMap.size(); i++) {
-				out.write(myEmailMap.get(i).getSchool().concat(DELIMITER)
-						.concat(myEmailMap.get(i).toString())
-						+ CARRIAGE_RETURN);
-			}
-			out.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**

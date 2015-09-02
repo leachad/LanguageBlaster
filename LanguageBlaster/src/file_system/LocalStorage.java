@@ -6,8 +6,10 @@ package file_system;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -25,7 +27,10 @@ public class LocalStorage {
 	private static final String STORAGE_PATH = "G:\\groups\\Elem Education\\ESL";
 
 	private static final String EMAIL_PATH = System.getProperty("user.dir")
-			.concat("\\src\\emailList.txt");
+			.concat("\\src\\file_system\\emailList.txt");
+	
+	private static final String CARRIAGE_RETURN = "/r/n";
+	private static final String DELIMITER = ",";
 
 	private static final String EMAIL_ERROR = "Sorry, couldn't read the flat file of emails...\n";
 
@@ -92,6 +97,31 @@ public class LocalStorage {
 			return myEmailMap;
 		else
 			return readEmailFile();
+	}
+	
+	/**
+	 * Method used to write out the list of emails to a .ser file.
+	 */
+	public static void saveEmailState(final Map<String, Email> theEmailMap) {
+		FileWriter out = null;
+
+		try {
+			out = new FileWriter(new File(EMAIL_PATH));
+			Iterator<String> iterator = theEmailMap.keySet().iterator();
+			
+			while (iterator.hasNext()) {
+				String nextkey = iterator.next();
+				out.write(theEmailMap.get(nextkey).getSchool().concat(DELIMITER)
+						.concat(theEmailMap.get(nextkey).toString())
+						+ CARRIAGE_RETURN);
+			}
+			
+
+			out.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static Map<String, Email> readEmailFile() {

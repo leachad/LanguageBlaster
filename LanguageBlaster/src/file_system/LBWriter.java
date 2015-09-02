@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,9 @@ public class LBWriter {
 
 	/** Holds a reference to the number of columns in the sheet. */
 	private static final int NUM_COLUMNS = 7;
+	
+	/** Holds a reference to the number of rows included in the title buffer. */
+	private static final int HEADER_BUFFER = 2;
 	
 	/** Private field to hold a reference to the Index of the Sheet in the Workbook.*/
 	private static final int TOP_SHEET_INDEX = 0;
@@ -190,7 +195,11 @@ public class LBWriter {
 			final List<String[]> theSheetCellData,
 			final Set<NativeLanguage> theLanguages) {
 
+		
+		
+		Collections.sort(theSheetCellData.subList(HEADER_BUFFER, theSheetCellData.size()), new StudentComparator());
 		Iterator<String[]> iterator = theSheetCellData.iterator();
+		
 
 		Workbook currentBook = null;
 		try {
@@ -271,7 +280,6 @@ public class LBWriter {
 			final String[] emails = myEmailMap.get(theCurrentSchool).getEmails();
 			mySchoolData = new SchoolData(theLanguageSet, theCurrentSchool,
 					bytes, emails, myCurrentFilePath, LBDate.getCurrentMonth());
-			System.out.println("% MATCH! --> " + mySchoolData.getEmailName() + ", \n     " + mySchoolData.getSchoolName());
 			myDataStack.push(mySchoolData);
 
 		}
@@ -352,6 +360,19 @@ public class LBWriter {
 
 		createCountRow(totalCount, theCurrentBook, rowCounter);
 
+	}
+	
+	private class StudentComparator implements Comparator<String[]> {
+
+		private static final int COMPARE_INDEX = 1;
+		
+		@Override
+		public int compare(String[] thisStudent, String[] thatStudent) {
+			return thisStudent[COMPARE_INDEX].compareTo(thatStudent[COMPARE_INDEX]);
+		}
+
+		
+		
 	}
 
 	
