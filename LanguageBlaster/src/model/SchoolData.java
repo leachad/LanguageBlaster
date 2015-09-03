@@ -18,9 +18,6 @@ public class SchoolData {
 	 */
 	private Set<NativeLanguage> myLanguageSet;
 
-	/** Private String to hold the correct school name. */
-	private String mySchoolName;
-
 	/**
 	 * Private field to hold a reference to the Email object held within the
 	 * school data.
@@ -81,8 +78,24 @@ public class SchoolData {
 	 */
 	public String getEmailName() {
 
-		return mySchoolName.substring(mySchoolName.indexOf("-") + 1).trim()
+		return myEmail.getSchool()
+				.substring(myEmail.getSchool().indexOf("-") + 1).trim()
 				.replaceAll(" ", "%20");
+	}
+
+	public String getEmailURI() {
+		
+		if (myEmail.getEmails().length <= 1) {
+			return myEmail.getEmails()[0].trim();
+		} else { 
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < myEmail.getEmails().length; i++) {
+				sb.append(myEmail.getEmails()[i].trim());
+				sb.append(",");
+			}
+		
+			return sb.toString();
+		}
 	}
 
 	/**

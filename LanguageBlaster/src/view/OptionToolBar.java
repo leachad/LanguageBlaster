@@ -122,7 +122,7 @@ public class OptionToolBar extends JToolBar {
 	private void addComponents() {
 
 		add(getEditEmailButton());
-		add(getEmailButton());
+		//add(getEmailButton());
 		add(getSLAButton());
 		add(getPrintButton());
 		add(getResultButton());
@@ -316,8 +316,7 @@ public class OptionToolBar extends JToolBar {
 							.trimToSize();
 				}
 
-				mailto = new URI(buildMailToURI(addresses.toString().trim(),
-						theSchoolData));
+				mailto = new URI(buildMailToURI(theSchoolData));
 				desktop.mail(mailto);
 
 			} catch (URISyntaxException | IOException e) {
@@ -343,9 +342,8 @@ public class OptionToolBar extends JToolBar {
 				+ LBDate.getCurrentMonth() + EMAIL_SUBJECT;
 	}
 
-	private String buildMailToURI(final String theEmailAddress,
-			final SchoolData theSchoolData) {
-		return FileResource.MAIL_TO.text + theEmailAddress
+	private String buildMailToURI(final SchoolData theSchoolData) {
+		return FileResource.MAIL_TO.text + theSchoolData.getEmailURI()
 				+ FileResource.START_ARGS.text + FileResource.SUBJECT.text
 				+ FileResource.ASSIGN_ARGS.text
 				+ theSchoolData.getCurrentMonth()
