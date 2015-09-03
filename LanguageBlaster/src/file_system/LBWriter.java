@@ -277,9 +277,9 @@ public class LBWriter {
 		 */
 		
 		if (myEmailMap.get(theCurrentSchool) != null) {
-			final String[] emails = myEmailMap.get(theCurrentSchool).getEmails();
-			mySchoolData = new SchoolData(theLanguageSet, theCurrentSchool,
-					bytes, emails, myCurrentFilePath, LBDate.getCurrentMonth());
+			final Email curEmail = myEmailMap.get(theCurrentSchool);
+			mySchoolData = new SchoolData(theLanguageSet, curEmail,
+					bytes, myCurrentFilePath, LBDate.getCurrentMonth());
 			myDataStack.push(mySchoolData);
 
 		}

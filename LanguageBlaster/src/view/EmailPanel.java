@@ -4,21 +4,28 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import model.Email;
+import resources.School;
 import file_system.LocalStorage;
 
 /**
@@ -38,6 +45,9 @@ public class EmailPanel extends JPanel {
 	/** Private field to hold a height for textfield. */
 	private static final int TEXTFIELD_HEIGHT = 30;
 
+	/** Private field to hold a number of columns. */
+	private static final int NUM_COLUMNS = 20;
+
 	/** Private field to hold the base panel. */
 	private JPanel myBasePanel;
 
@@ -46,13 +56,20 @@ public class EmailPanel extends JPanel {
 
 	/** Private field to hold an array of Email address objects. */
 	private Map<String, Email> myEmailMap;
-	
-	/** Private field to hold a reference to the base frame.*/
+
+	/**
+	 * Private field to hold a reference to the List of Text Fields showing
+	 * Emails.
+	 */
+	private Map<String, JTextField> myFieldMap;
+
+	/** Private field to hold a reference to the base frame. */
 	private JFrame myBaseFrame;
 
 	public EmailPanel(final JFrame theBaseFrame) {
 
 		myBaseFrame = theBaseFrame;
+		myFieldMap = new HashMap<>();
 		start();
 		setSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 	}
@@ -66,11 +83,9 @@ public class EmailPanel extends JPanel {
 
 		myEmailMap = LocalStorage.getEmailMap();
 
-		myBasePanel = new JPanel(new GridLayout(myEmailMap.size(), 2));
-		myBasePanel.setSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-		addSaveButton();
-		displayEmails();
+		add(addSaveButton());
+		add(addNewSchoolButton());
+		add(displaySavedEmails());
 		setPanelLayout();
 
 	}
@@ -78,18 +93,18 @@ public class EmailPanel extends JPanel {
 	/**
 	 * Private method to add a save button to the base panel.
 	 */
-	private void addSaveButton() {
+	private JPanel addSaveButton() {
 
+		final JPanel savePanel = new JPanel();
 		final JLabel direction = new JLabel();
-		direction.setText("Press Enter if you change an Email String");
-		add(direction);
+		direction.setText("Separate Multiple Emails with a ';'");
+		direction.setOpaque(true);
+		direction.setForeground(Color.red);
 
-		final JLabel dir2 = new JLabel();
-		dir2.setText("Hit Save to Save the archive of email addresses");
-		add(dir2);
+		savePanel.add(direction);
 
 		final JButton saveButton = new JButton("Save");
-		add(saveButton);
+		savePanel.add(saveButton);
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent theEvent) {
@@ -99,6 +114,105 @@ public class EmailPanel extends JPanel {
 
 			}
 		});
+
+		return savePanel;
+	}
+
+	private JPanel createSchoolEmailRow(final Email theEmail) {
+		final JPanel rowPanel = new JPanel();
+
+		final JTextField showSchool = new JTextField(theEmail.getSchool());
+		showSchool.setEditable(false);
+		showSchool.setColumns(NUM_COLUMNS);
+		rowPanel.add(showSchool);
+
+		final JTextField emailField = new JTextField();
+		emailField.setPreferredSize(new Dimension(DEFAULT_WIDTH / 2,
+				TEXTFIELD_HEIGHT));
+		rowPanel.add(emailField);
+		emailField.setText(theEmail.toString());
+
+		final JButton deleteButton = new JButton("X");
+		deleteButton.setOpaque(true);
+		deleteButton.setForeground(Color.RED);
+		deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent theEvent) {
+
+				int selection = JOptionPane.showConfirmDialog(null,
+						"Are you sure you want to delete this Center School?");
+				if (selection == JOptionPane.OK_OPTION) {
+					myEmailMap.remove(theEmail.getSchool());
+					myFieldMap.remove(theEmail.getSchool());
+					myBasePanel.remove(rowPanel);
+					myBasePanel.revalidate();
+					myBasePanel.repaint();
+					
+				}
+
+			}
+		});
+		rowPanel.add(deleteButton);
+		myFieldMap.put(theEmail.getSchool(), emailField);
+
+		return rowPanel;
+	}
+
+	/**
+	 * Private method to add a New School button to the base panel.
+	 */
+	private JPanel addNewSchoolButton() {
+
+		final JPanel schoolPanel = new JPanel();
+
+		final JButton addButton = new JButton("Add Program School");
+		schoolPanel.add(addButton);
+
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent theEvent) {
+				JLabel schoolLabel = new JLabel(
+						"Please Choose the Name of the Center School");
+				JComboBox<School> schoolName = new JComboBox<School>(
+						getUnusedSchools(School.values()));
+				JLabel emailLabel = new JLabel(
+						"Please Enter the Emails separated by ';' ");
+				emailLabel.setOpaque(true);
+				emailLabel.setForeground(Color.red);
+				JTextField schoolEmails = new JTextField();
+
+				Object[] message = { schoolLabel, schoolName, emailLabel,
+						schoolEmails };
+				int option = JOptionPane
+						.showConfirmDialog(null, message,
+								"Add Center School Email",
+								JOptionPane.OK_CANCEL_OPTION);
+
+				if (option == JOptionPane.OK_OPTION) {
+					myBasePanel.add(createSchoolEmailRow(new Email(
+							((School) schoolName.getSelectedItem()).text,
+							buildEmailArray(schoolEmails))));
+					myBasePanel.revalidate();
+					myBasePanel.repaint();
+				}
+			}
+		});
+
+		return schoolPanel;
+	}
+
+	private String[] buildEmailArray(final JTextField theSchoolEmails) {
+		return theSchoolEmails.getText().split(";");
+	}
+
+	private School[] getUnusedSchools(final School[] allSchools) {
+		List<School> schools = new LinkedList<>();
+
+		for (int i = 0; i < allSchools.length; i++) {
+			if (myFieldMap.get(allSchools[i].text) == null)
+				schools.add(allSchools[i]);
+		}
+
+		return schools.toArray(new School[schools.size()]);
 	}
 
 	/**
@@ -121,84 +235,22 @@ public class EmailPanel extends JPanel {
 	 * Private method to display the emails with their schools on the panel.
 	 * TODO: Issue is happening in parseline
 	 */
-	private void displayEmails() {
+	private JPanel displaySavedEmails() {
+
+		myBasePanel = new JPanel(new GridLayout(0, 1));
+		myBasePanel.setSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
 		Iterator<String> keySet = myEmailMap.keySet().iterator();
 
 		while (keySet.hasNext()) {
-			final Email email = myEmailMap.get(keySet.next());
-
-			final JTextField showSchool = new JTextField(email.getSchool());
-			showSchool.setEditable(false);
-			showSchool.setPreferredSize(new Dimension(DEFAULT_WIDTH / 2,
-					TEXTFIELD_HEIGHT));
-			myBasePanel.add(showSchool);
-
-			final JTextField emailField = new JTextField();
-			emailField.setPreferredSize(new Dimension(DEFAULT_WIDTH / 2,
-					TEXTFIELD_HEIGHT));
-			myBasePanel.add(emailField);
-			emailField.setText(email.toString());
-
-			emailField.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent theEvent) {
-					final String newEmail = emailField.getText();
-					final String newEntry = showSchool.getText() + ", "
-							+ newEmail;
-					final Email newMail = parseLine(newEntry, true);
-					replaceEmail(newMail);
-
-					emailField.setText(newMail.toString());
-				}
-			});
+			Email curEmail = myEmailMap.get(keySet.next());
+			System.out.println("Adding Email " + curEmail.getSchool() + "--"
+					+ curEmail.toString());
+			myBasePanel.add(createSchoolEmailRow(curEmail));
 
 		}
 
-	}
-
-	/**
-	 * Private method to replace the email in the Map.
-	 * 
-	 * @param newMail
-	 *            is the new Email object for rewriting out to the directory.
-	 */
-
-	private void replaceEmail(Email newMail) {
-		if (myEmailMap.get(newMail.getSchool()) != null)
-			myEmailMap.put(newMail.getSchool(), newMail);
-	}
-
-	/**
-	 * Private method to parse a new line from the email document.
-	 * 
-	 * @param theLine
-	 *            is the string to parse.
-	 * @param isOutgoing
-	 *            is the boolean determining if the write is out bound or the
-	 *            read is in bound. true is out bound.
-	 */
-	private Email parseLine(final String theLine, final boolean isOutgoing) {
-
-		final String[] firstSplit = theLine.split(","); // split the line
-
-		final String school = firstSplit[0].trim(); // save the school
-
-		String[] emails = new String[firstSplit[1].split(";").length];
-		if (!isOutgoing) {
-			String[] secondSplit = firstSplit[1].split(";");
-			for (int i = 0; i < secondSplit.length; i++) {
-				emails[i] = secondSplit[i];
-			}
-
-		} else {
-			String[] secondSplit = firstSplit[1].split(";");
-			for (int i = 0; i < secondSplit.length; i++) {
-				emails[i] = secondSplit[i];
-			}
-
-		}
-
-		return new Email(school, emails);
+		return myBasePanel;
 
 	}
 
@@ -207,8 +259,27 @@ public class EmailPanel extends JPanel {
 	 * program initially reads from.
 	 */
 	private void writeEmailsToFile() {
-		LocalStorage.saveEmailState(myEmailMap);
+		LocalStorage.saveEmailState(modifyEmailMap());
 
+	}
+
+	/**
+	 * Private method to modify the email map based on the display.
+	 */
+	private Map<String, Email> modifyEmailMap() {
+		Iterator<String> fieldIterator = myFieldMap.keySet().iterator();
+		while (fieldIterator.hasNext()) {
+			String key = fieldIterator.next();
+			myEmailMap.put(key, buildEmail(key, myFieldMap.get(key)));
+
+		}
+
+		return myEmailMap;
+	}
+
+	private Email buildEmail(final String theSchoolName,
+			final JTextField theInput) {
+		return new Email(theSchoolName, theInput.getText().trim().split(";"));
 	}
 
 	/**

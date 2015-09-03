@@ -248,7 +248,7 @@ public class OptionToolBar extends JToolBar {
 		editEmails.setSize(new Dimension(editEmails.getPreferredSize()));
 
 		final JFrame frame = new JFrame();
-		final EmailPanel eP = new EmailPanel(myFrame);
+		final EmailPanel eP = new EmailPanel(frame);
 
 		myEmailMap = eP.getEmails();
 		// opens up a new email window.
@@ -283,8 +283,7 @@ public class OptionToolBar extends JToolBar {
 
 			} catch (final IOException e) {
 
-				JOptionPane
-						.showMessageDialog(null, BlasterError.PRINT_FILE_ERROR.text + e.getMessage());
+				JOptionPane.showMessageDialog(null, BlasterError.PRINT_FILE_ERROR.text + e.getMessage());
 
 			}
 		}
@@ -299,16 +298,18 @@ public class OptionToolBar extends JToolBar {
 		if (Desktop.isDesktopSupported()
 				&& (desktop = Desktop.getDesktop())
 						.isSupported(Desktop.Action.MAIL)) {
+			
+			Email curEmail = myEmailMap.get(theSchoolData.getSchoolName());
 			System.out.println("Preparing Email Client for ---> "
-					+ theSchoolData.getEmailName() + " @ "
-					+ theSchoolData.getSchoolName());
+					+ curEmail.toString() + " @ "
+					+ curEmail.getSchool());
 			try {
 
 				URI mailto;
 				StringBuilder addresses = new StringBuilder();
-				String[] teacherEmails = theSchoolData.getEmailAddresses();
+				String[] teacherEmails = curEmail.getEmails();
 
-				for (int i = 0; i < theSchoolData.getEmailAddresses().length; i++) {
+				for (int i = 0; i < teacherEmails.length; i++) {
 					addresses.append(teacherEmails[i].trim())
 							.append(FileResource.SEMI_COLON.text)
 							.append(FileResource.ENCODED_SPACE.text)

@@ -1,0 +1,54 @@
+101 - Arlington Elementary School
+103 - Birney Elementary School
+104 - Blix Elementary School
+105 - Boze Elementary School
+107 - Browns Point Elementary School
+109 - Bryant Montessori School
+110 - Crescent Heights Elementary School
+113 - Delong Elementary School
+115 - Downing Elementary School
+117 - Edison Elementary School
+119 - Fawcett Elementary School
+121 - Fern Hill Elementary School
+123 - Franklin Elementary School
+125 - Geiger Montessori School
+127 - Grant Elementary School
+129 - Helen Stafford Elementary School
+133 - Jefferson Elementary School
+135 - Larchmont Elementary School
+137 - Lister Elementary School
+139 - Lowell Elementary School
+143 - Lyon Elementary School
+147 - Manitou Park Elementary School
+149 - Mann Elementary School
+151 - McCarver Elementary School
+157 - N.E. Tacoma Elementary School
+163 - Point Defiance Elementary School
+165 - Reed Elementary School
+169 - Roosevelt Elementary School
+175 - Sheridan Elementary School
+177 - Sherman Elementary School
+179 - Stanley Elementary School
+181 - Skyline Elementary School
+185 - Washington Elementary School
+187 - Whitman Elementary School
+189 - Whittier Elementary School
+200 - Angelo Giaudrone Middle School
+202 - Baker Middle School
+206 - Gray Middle School
+210 - Jason Lee Middle School
+212 - Mason Middle School
+216 - Meeker Middle School
+218 - Stewart Middle School
+220 - Truman Middle School
+221 - First Creek Middle School
+224 - Foss High School
+226 - Lincoln High School
+228 - Mount Tahoma High School
+230 - Stadium High School
+232 - Wilson High School
+234 - Oakland High School
+237 - Tacoma School of the Arts
+239 - Science and Math Institute
+242 - Comm Based Trans Prog
+274 - Willie Stewart Academy

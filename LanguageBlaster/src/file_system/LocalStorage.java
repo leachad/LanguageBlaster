@@ -14,9 +14,9 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import exceptions.BlasterError;
 import model.Email;
 import view.LBDate;
+import exceptions.BlasterError;
 
 /**
  * @author aleach
@@ -32,8 +32,7 @@ public class LocalStorage {
 			.concat("\\src\\file_system\\emailList.txt");
 	
 	/** static fields to hold references to the file delimiters.*/
-	private static final String CARRIAGE_RETURN = "/r/n";
-	private static final String DELIMITER = ",";
+	private static final String NEW_LINE = "\n";
 	private static final String DELIMITER_ONE = ",";
 	private static final String DELIMITER_TWO = ";";
 
@@ -111,9 +110,7 @@ public class LocalStorage {
 			
 			while (iterator.hasNext()) {
 				String nextkey = iterator.next();
-				out.write(theEmailMap.get(nextkey).getSchool().concat(DELIMITER)
-						.concat(theEmailMap.get(nextkey).toString())
-						+ CARRIAGE_RETURN);
+				out.write(buildEmailLine(myEmailMap.get(nextkey)));
 			}
 			
 
@@ -147,6 +144,19 @@ public class LocalStorage {
 
 	}
 
+	private static String buildEmailLine(final Email theEmail) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(theEmail.getSchool());
+		sb.append(DELIMITER_ONE);
+		for (int i = 0; i < theEmail.getEmails().length; i++) {
+			sb.append(theEmail.getEmails()[i]);
+			sb.append(DELIMITER_TWO);
+		}
+		
+		sb.append(NEW_LINE);
+		
+		return sb.toString();
+	}
 	/**
 	 * Private method to parse a new line from the email document.
 	 * 
