@@ -137,11 +137,8 @@ public class LBWriter {
 			throws IOException {
 
 		Workbook currentBook = new HSSFWorkbook();
-
-		final String[] schoolName = theCurrentSchool.split(FileResource.DASH.text);
-
 		myCurrentFilePath = LocalStorage.myOutputFolder.getAbsolutePath()
-				.concat(File.separator).concat(schoolName[1].trim())
+				.concat(File.separator).concat(theCurrentSchool.trim())
 				.concat(FileResource.EXT_CONCAT.text + FileResource.XLS.text);
 
 		myOutputStream = new FileOutputStream(myCurrentFilePath);

@@ -166,16 +166,17 @@ public class LBParser {
 	 * @return theNewStudent
 	 */
 	private Student createNewStudent(final Row theCurrentRow) {
-		int studentID = Integer.parseInt(theCurrentRow.getCell(0)
-				.getStringCellValue());
-		String name = theCurrentRow.getCell(1).getStringCellValue();
-		String building = theCurrentRow.getCell(2).getStringCellValue();
-		String bdate = theCurrentRow.getCell(3).getStringCellValue();
-		String language = theCurrentRow.getCell(4).getStringCellValue();
-		String model = theCurrentRow.getCell(5).getStringCellValue();
+		String name = theCurrentRow.getCell(0).getStringCellValue();
+		int studentID = Integer.parseInt(theCurrentRow.getCell(1)
+				.getStringCellValue().trim());
+		String grade = theCurrentRow.getCell(2).getStringCellValue();
+		String building = theCurrentRow.getCell(3).getStringCellValue();
+		String bdate = theCurrentRow.getCell(4).getStringCellValue();
+		String language = theCurrentRow.getCell(5).getStringCellValue();
+		String model = theCurrentRow.getCell(6).getStringCellValue();
 		if (model.length() == 0)
 			model = DEFAULT_MODEL;
-		String grade = theCurrentRow.getCell(6).getStringCellValue();
+		
 		Student current = new Student(studentID, name, building, bdate,
 				language, model.charAt(0), grade);
 
