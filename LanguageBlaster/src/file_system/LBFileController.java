@@ -164,5 +164,9 @@ public class LBFileController {
 			JOptionPane.showMessageDialog(null, BlasterError.PARSE_FILE_ERROR.text);
 		}
 	}
+	
+	public boolean isSLACountInitialized() {
+		return mySLACount != null;
+	}
 
 }

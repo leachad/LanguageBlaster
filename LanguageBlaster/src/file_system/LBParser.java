@@ -38,7 +38,7 @@ public class LBParser {
 	 * Private field to hold a reference to the Default Instructional Model,
 	 * should one not exist.
 	 */
-	private static final String DEFAULT_MODEL = "D";
+	private static final String DEFAULT_MODEL = "Content ESL";
 
 	/**
 	 * Private field to hold a reference to the CellMap used for organizing the
@@ -178,7 +178,7 @@ public class LBParser {
 			model = DEFAULT_MODEL;
 		
 		Student current = new Student(studentID, name, building, bdate,
-				language, model.charAt(0), grade);
+				language, model, grade);
 
 		return current;
 	}
@@ -191,29 +191,17 @@ public class LBParser {
 	 * 
 	 */
 	private void constructCellMap(final List<Student> theRowBuffer) {
-
-		// Create School Headers for the First School
-		String currentBuilding = theRowBuffer.get(0).getMyBuilding();
-		createNewSchoolHeaders(currentBuilding);
-		createNewSchoolLanguageMap(currentBuilding);
-
+		String currentBuilding = "";
 		for (int i = 0; i < theRowBuffer.size(); i++) {
-			if (currentBuilding != theRowBuffer.get(i).getMyBuilding()) {
-				currentBuilding = theRowBuffer.get(i).getMyBuilding();
+			currentBuilding = theRowBuffer.get(i).getMyBuilding();
+			if (myCellMap.get(currentBuilding) == null) {	
 				createNewSchoolHeaders(currentBuilding);
 				createNewSchoolLanguageMap(currentBuilding);
-				myCellMap.get(currentBuilding).add(
-						createStudentData(theRowBuffer.get(i)));
-				evaluateNativeLanguages(theRowBuffer.get(i).getMyLanguage(),
-						currentBuilding);
-
-			} else {
-				myCellMap.get(currentBuilding).add(
-						createStudentData(theRowBuffer.get(i)));
-				evaluateNativeLanguages(theRowBuffer.get(i).getMyLanguage(),
-						currentBuilding);
 			}
-
+				myCellMap.get(currentBuilding).add(
+						createStudentData(theRowBuffer.get(i)));
+				evaluateNativeLanguages(theRowBuffer.get(i).getMyLanguage(),
+						currentBuilding);
 		}
 	}
 
@@ -240,7 +228,7 @@ public class LBParser {
 		return new String[] { Integer.toString(student.getMyStudentID()),
 				student.getMyStudentName(), student.getMyBuilding(),
 				student.getMyBirthdate(), student.getMyLanguage(),
-				Character.toString(student.getMyInstructionalModel()),
+				student.getMyInstructionalModel(),
 				student.getMyGrade() };
 	}
 
@@ -285,19 +273,11 @@ public class LBParser {
 	 * @return theHeaderCellArray
 	 */
 	private String[] getHeaderCells(final String theCurrentSchool) {
-		return new String[] { HeaderCase.ID_HEADER.text,
-				HeaderCase.NAME_HEADER.text, HeaderCase.BUILDING_HEADER.text,
-				HeaderCase.BIRTHDATE_HEADER.text,
-				HeaderCase.LANGUAGE_HEADER.text, HeaderCase.MODEL_HEADER.text,
-				HeaderCase.GRADE_HEADER.text };
+		return new String[] { HeaderCase.NAME_HEADER.text, HeaderCase.ID_HEADER.text,
+				HeaderCase.GRADE_HEADER.text, HeaderCase.BUILDING_HEADER.text,
+				HeaderCase.BIRTHDATE_HEADER.text, HeaderCase.LANGUAGE_HEADER.text, HeaderCase.MODEL_HEADER.text };
 	}
 
-	/**
-	 * 
-	 * TODO This function should be used with writing Private method used to
-	 * build the Set of NativeLanguages for a specific school.
-	 * 
-	 */
 	private void evaluateNativeLanguages(final String theCurrentLanguage,
 			final String theCurrentSchool) {
 

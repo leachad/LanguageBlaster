@@ -223,7 +223,7 @@ public class LBWriter {
 			closeStream(currentBook, theCurrentSchool, theLanguages);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,
-					BlasterError.CREATE_BOOK_ERROR.text + e.getCause());
+					BlasterError.CREATE_BOOK_ERROR.text + e.getMessage());
 		}
 
 	}

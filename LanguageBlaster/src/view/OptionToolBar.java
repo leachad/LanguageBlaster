@@ -110,8 +110,8 @@ public class OptionToolBar extends JToolBar {
 		myDataStack = theDataStack;
 		myEmailMap = theEmailMap;
 		myFileList = theFileList;
-		myEmailButton.setEnabled(true);
-		mySlaButton.setEnabled(true);
+		//myEmailButton.setEnabled(true);
+		//mySlaButton.setEnabled(true);
 		myPrintButton.setEnabled(true);
 		myResultButton.setEnabled(true);
 	}
@@ -121,9 +121,9 @@ public class OptionToolBar extends JToolBar {
 	 */
 	private void addComponents() {
 
-		add(getEditEmailButton());
+		//add(getEditEmailButton());
 		//add(getEmailButton());
-		add(getSLAButton());
+		//add(getSLAButton());
 		add(getPrintButton());
 		add(getResultButton());
 

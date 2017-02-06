@@ -8,12 +8,12 @@ public class Student {
 	private String myBuilding;
 	private String myBirthdate;
 	private String myLanguage;
-	private char myInstructionalModel;
+	private String myInstructionalModel;
 	private String myGrade;
 	
 	public Student(final int theStudentID, final String theStudentName,
 			final String theBuilding, final String theBirthdate,
-			final String theLanguage, final char theInstructionalModel,
+			final String theLanguage, final String theInstructionalModel,
 			final String theGrade) {
 		myStudentID = theStudentID;
 		myStudentName = theStudentName;
@@ -44,7 +44,7 @@ public class Student {
 		return myLanguage;
 	}
 
-	public char getMyInstructionalModel() {
+	public String getMyInstructionalModel() {
 		return myInstructionalModel;
 	}
 
@@ -56,10 +56,10 @@ public class Student {
 	public String toString() {
 		return "Name: " + myStudentName + "\n"
 				+ "ID: " + myStudentID + "\n"
-				+ "Building: " + myBuilding + "\n"
 				+ "Grade: " + myGrade + "\n"
-				+ "Instructional Model: " + myInstructionalModel + "\n"
+				+ "Building: " + myBuilding + "\n"
+				+ "Birthdate: " + myBirthdate + "\n"
 				+ "Language: " + myLanguage + "\n"
-				+ "Birthdate: " + myBirthdate + "\n-----------------";
+				+ "Instructional Model: " + myInstructionalModel + "\n-----------------";
 	}
 }

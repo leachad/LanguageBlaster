@@ -33,7 +33,7 @@ import file_system.LBFileController;
 
 public class LBMain {
 
-	/** Static field to hold a referencw to a Tookmit. */
+	/** Static field to hold a reference to a Toolkit. */
 	private static final Toolkit TOOL_KIT = Toolkit.getDefaultToolkit();
 
 	private static final int FRAME_SCALAR = 3;
@@ -47,7 +47,7 @@ public class LBMain {
 	/** Private field to hold a reference to a space delimiter. */
 	private static final String SPACE_DELIMITER = " ";
 
-	private static final String FRAME_TITLE = "Language Blaster Version 1.4";
+	private static final String FRAME_TITLE = "Language Blaster Version 1.5";
 
 	private static final String FILTER_TITLE = "Spreadsheet File Types";
 
@@ -97,7 +97,7 @@ public class LBMain {
 		myFrame.setPreferredSize(new Dimension((int) (TOOL_KIT.getScreenSize()
 				.getWidth() / FRAME_SCALAR), (int) TOOL_KIT.getScreenSize()
 				.getHeight() / FRAME_SCALAR));
-		myFrame.setResizable(false);
+		myFrame.setResizable(true);
 		myFrame.pack();
 		myFrame.setVisible(true);
 		myFrame.setLocationRelativeTo(null);
@@ -229,7 +229,7 @@ public class LBMain {
 			@Override
 			public void itemStateChanged(final ItemEvent theEvent) {
 
-				if (theEvent.getStateChange() == ItemEvent.SELECTED) {
+				if (theEvent.getStateChange() == ItemEvent.SELECTED && !myFileController.isSLACountInitialized()) {
 					myFileController.createNewOverViewWorkbook(LBDate
 							.getCurrentMonth().concat(SPACE_DELIMITER)
 							.concat(LBDate.getCurrentDay())

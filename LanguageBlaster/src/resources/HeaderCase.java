@@ -13,8 +13,8 @@ public enum HeaderCase {
 	BUILDING_HEADER("Building"),
 	ID_HEADER("Student ID"),
 	NAME_HEADER("Student Name"),
-	BIRTHDATE_HEADER("Birthdate"),
-	LANGUAGE_HEADER("Language"),
+	BIRTHDATE_HEADER("Birth Date"),
+	LANGUAGE_HEADER("Home Language"),
 	MODEL_HEADER("Instructional Model"),
 	GRADE_HEADER("Grade");
 	
