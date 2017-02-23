@@ -1,7 +1,7 @@
 /**
  * 
  */
-package resources;
+package lbresources;
 
 /**
  * @author aleach

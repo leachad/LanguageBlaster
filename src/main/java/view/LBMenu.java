@@ -16,7 +16,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import exceptions.BlasterError;
-import resources.FileResource;
+import lbresources.FileResource;
 
 /**
  * @author leachad

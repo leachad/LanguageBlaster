@@ -23,13 +23,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import resources.FileResource;
-import resources.ViewResource;
 import view.HeaderTableModel;
 import view.LBDate;
 import view.LBMenu;
 import view.OptionToolBar;
 import file_system.LBFileController;
+import lbresources.FileResource;
+import lbresources.ViewResource;
 
 public class LBMain {
 
@@ -110,7 +110,7 @@ public class LBMain {
 	private void addToolbar() {
 
 		myToolBar = new OptionToolBar(myFrame, myFileController.getDataStack(),
-				myFileController.getFileList(), myFileController.getEmailMap());
+				myFileController.getFileList());
 		myFrame.add(myToolBar, BorderLayout.SOUTH);
 
 	}
@@ -200,7 +200,6 @@ public class LBMain {
 				myFileController.readWorkbook();
 				myFileController.executeBatchPublish();
 				myToolBar.updateToolBar(myFileController.getDataStack(),
-						myFileController.getEmailMap(),
 						myFileController.getFileList());
 				myFileController.closeSummaryWorkBook();
 

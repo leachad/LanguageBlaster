@@ -12,7 +12,7 @@ import java.util.Date;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import resources.BlasterCalendar;
+import lbresources.BlasterCalendar;
 
 /**
  * @author aleach

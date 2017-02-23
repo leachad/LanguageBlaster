@@ -17,8 +17,8 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
-import resources.FileResource;
 import exceptions.BlasterError;
+import lbresources.FileResource;
 
 /**
  * 
