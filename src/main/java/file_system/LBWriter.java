@@ -212,7 +212,7 @@ public class LBWriter {
 
 		final String[] schoolName = theCurrentSchool.split(FileResource.DASH.text);
 
-		myFileList.add(new File(LocalStorage.myOutputFolder.getAbsolutePath().concat(File.separator).concat(schoolName[1].trim()).concat(FileResource.EXT_CONCAT.text + FileResource.XLS.text)));
+		myFileList.add(new File(LocalStorage.myOutputFolder.getAbsolutePath().concat(File.separator).concat(schoolName[1].trim()).concat(FileResource.EXT_CONCAT.text + FileResource.XLSX.text)));
 
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
