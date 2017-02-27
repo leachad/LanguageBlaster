@@ -29,6 +29,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 
 import exceptions.BlasterError;
+import file_system.LocalStorage;
 import lbresources.FileResource;
 import lbresources.ViewResource;
 import model.NativeLanguage;
@@ -212,7 +213,7 @@ public class LBWriter {
 
 		final String[] schoolName = theCurrentSchool.split(FileResource.DASH.text);
 
-		myFileList.add(new File(LocalStorage.myOutputFolder.getAbsolutePath().concat(File.separator).concat(schoolName[1].trim()).concat(FileResource.EXT_CONCAT.text + FileResource.XLSX.text)));
+		myFileList.add(new File(LocalStorage.myOutputFolder.getAbsolutePath().concat(File.separator).concat(schoolName[1].trim()).concat(FileResource.EXT_CONCAT.text + FileResource.XLS.text)));
 
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 

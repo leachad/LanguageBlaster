@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import exceptions.BlasterError;
+import file_system.LocalStorage;
 import lbresources.HeaderCase;
 import model.NativeLanguage;
 import model.Student;
@@ -205,7 +206,7 @@ public class LBParser {
 	 * @return theCurrentStudent as represented with Strings
 	 */
 	private String[] createStudentData(final Student student) {
-		return new String[] {Integer.toString(student.getMyStudentID()), student.getMyStudentName(), student.getMyBuilding(), student.getMyBirthdate(), student.getMyLanguage(), student.getMyInstructionalModel(), student.getMyGrade()};
+		return new String[] {student.getMyStudentName(), Integer.toString(student.getMyStudentID()), student.getMyGrade(), student.getMyBuilding(), student.getMyBirthdate(), student.getMyLanguage(), student.getMyInstructionalModel()};
 	}
 
 	/**
